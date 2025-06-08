@@ -1,0 +1,56 @@
+﻿using Player;
+using UnityEngine;
+using System.Collections.Generic;
+
+namespace Board
+{
+    public class SaLBoard : MonoBehaviour
+    {
+        [SerializeField] private Transform boardParent;
+        [SerializeField] private Transform startPoint;
+        [SerializeField] private GameObject cellPrefab;
+        [SerializeField] private DummyPlayer player;
+        
+        private List<BoardCell> cells = new List<BoardCell>();
+        
+        private void Start()
+        {
+            GenerateBoard();
+        }
+
+        private void GenerateBoard()
+        {
+            var delta = 0;
+            for (var row = 0; row < 10; row++)
+            {
+                for (var column = 0; column < 10; column++)
+                {
+                    var resultantCol = Mathf.Abs(column - delta);
+                    var cell = Instantiate(cellPrefab, startPoint.position + new Vector3(resultantCol * 2, 0, row * 2), Quaternion.identity);
+                    cell.transform.SetParent(boardParent);
+                    cell.name = $"BoardCell_{row * 10 + column + 1}";
+                    var cellComponent = cell.GetComponent<BoardCell>();
+                    cellComponent.Init(row * 10 + column + 1);
+                    cells.Add(cellComponent);
+                }
+                delta = delta == 0 ? 9 : 0;
+            }
+        }
+        
+        public BoardCell GetCell(int cellIndex)
+        {
+            return cells[cellIndex];
+        }
+
+        public List<BoardCell> GetPath(int from, int to)
+        {
+            var path = new List<BoardCell>();
+            for (var i = from; i < to; i++)
+            {
+                path.Add(cells[i]);
+            }
+            Debug.Log($"Path from {from} to {to}. Count: {path.Count}");
+            return path;
+        }
+    }
+}
