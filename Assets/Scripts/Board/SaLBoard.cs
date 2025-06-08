@@ -1,4 +1,4 @@
-﻿using Player;
+using Player;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -11,7 +11,7 @@ namespace Board
         [SerializeField] private GameObject cellPrefab;
         [SerializeField] private DummyPlayer player;
         
-        private List<BoardCell> cells = new List<BoardCell>();
+        private List<BoardCell> cells = new();
         
         private void Start()
         {
@@ -34,13 +34,8 @@ namespace Board
                     cellComponent.Init(cellId);
                     cells.Add(cellComponent);
                 }
-                delta = delta == 0 ? 9 : 0;
+                delta = (row + 1) % 2 * 9;
             }
-        }
-        
-        public BoardCell GetCell(int cellIndex)
-        {
-            return cells[cellIndex];
         }
 
         public List<BoardCell> GetPath(int from, int to)
@@ -52,6 +47,16 @@ namespace Board
             }
             Debug.Log($"Path from {from} to {to}. Count: {path.Count}");
             return path;
+        }
+
+        private void OnDestroy()
+        {
+            foreach (var cell in cells)
+            {
+                Destroy(cell.gameObject);
+            }
+            cells.Clear();
+            cells = null;
         }
     }
 }
