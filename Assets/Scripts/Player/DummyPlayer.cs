@@ -36,7 +36,7 @@ namespace Player
         
         private IEnumerator MovePlayer(Transform targetTransform)
         {
-            while (Vector3.Distance(transform.position, targetTransform.position) > 0.1f)
+            while ((transform.position - targetTransform.position).sqrMagnitude > 0.1f * 0.1f)
             {
                 transform.position = Vector3.MoveTowards(transform.position, targetTransform.position, moveSpeed * Time.deltaTime);
                 yield return null;

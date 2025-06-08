@@ -28,9 +28,10 @@ namespace Board
                     var resultantCol = Mathf.Abs(column - delta);
                     var cell = Instantiate(cellPrefab, startPoint.position + new Vector3(resultantCol * 2, 0, row * 2), Quaternion.identity);
                     cell.transform.SetParent(boardParent);
-                    cell.name = $"BoardCell_{row * 10 + column + 1}";
+                    var cellId = row * 10 + column + 1;
+                    cell.name = $"BoardCell_{cellId}";
                     var cellComponent = cell.GetComponent<BoardCell>();
-                    cellComponent.Init(row * 10 + column + 1);
+                    cellComponent.Init(cellId);
                     cells.Add(cellComponent);
                 }
                 delta = delta == 0 ? 9 : 0;
