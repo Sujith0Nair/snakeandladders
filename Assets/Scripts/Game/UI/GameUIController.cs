@@ -1,22 +1,26 @@
+using Game;
 using TMPro;
 using UnityEngine;
 
-public class GameUIController : MonoBehaviour
+namespace GameUI
 {
-    [SerializeField] private TextMeshProUGUI currentPlayerTurnText;
-
-    private void Start()
+    public class GameUIController : MonoBehaviour
     {
-        GameManager.Instance.OnPlayerTurnFinished += OnPlayerTurnFinished;
-    }
+        [SerializeField] private TextMeshProUGUI currentPlayerTurnText;
 
-    private void OnDestroy()
-    {
-        GameManager.Instance.OnPlayerTurnFinished -= OnPlayerTurnFinished;
-    }
+        private void Start()
+        {
+            GameManager.Instance.OnPlayerTurnFinished += OnPlayerTurnFinished;
+        }
 
-    private void OnPlayerTurnFinished(int currentPlayerIndex)
-    {
-        currentPlayerTurnText.text = $"Player {currentPlayerIndex + 1} Turn!";
+        private void OnDestroy()
+        {
+            GameManager.Instance.OnPlayerTurnFinished -= OnPlayerTurnFinished;
+        }
+
+        private void OnPlayerTurnFinished(int currentPlayerID)
+        {
+            currentPlayerTurnText.text = $"Player {currentPlayerID + 1} Turn!";
+        }
     }
 }

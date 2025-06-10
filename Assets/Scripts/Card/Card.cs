@@ -1,43 +1,40 @@
+using Game;
 using TMPro;
 using UnityEngine;
 
-public class Card : MonoBehaviour
+namespace Deck
 {
-    [SerializeField] private TextMeshProUGUI cardNameText;
-
-    public CardSO cardData { get; private set; }
-    private int playerIndex;
-    private int cardIndex;
-
-    public void SetupData(CardSO cardData, int playerIndex, int cardIndex)
+    public class Card : MonoBehaviour
     {
-        this.cardData = cardData;
-        this.playerIndex = playerIndex;
-        this.cardIndex = cardIndex;
+        [SerializeField] private TextMeshProUGUI cardNameText;
 
-        UpdateUI();
-    }
+        public CardSO cardData { get; private set; }
+        private int playerID;
+        private int cardIndex;
 
-    public void UpdateData(CardSO cardData)
-    {
-        this.cardData = cardData;
-        UpdateUI();
-    }
-
-    public void PlayCard()
-    {
-        if (GameManager.Instance.currentPlayerTurn != playerIndex)
+        public void SetupData(CardSO cardData, int playerID, int cardIndex)
         {
-            Debug.LogError($"Not Ur Turn!");
-            return;
+            this.cardData = cardData;
+            this.playerID = playerID;
+            this.cardIndex = cardIndex;
+
+            UpdateUI();
         }
 
-        Debug.LogError($"Player {playerIndex + 1} Used {cardData.name}");
-        GameManager.Instance.FinishPlayerTurn(playerIndex, cardIndex);
-    }
+        public void UpdateData(CardSO cardData)
+        {
+            this.cardData = cardData;
+            UpdateUI();
+        }
 
-    public void UpdateUI()
-    {
-        cardNameText.text = cardData.name;
+        public void PlayCard()
+        {
+            GameManager.Instance.PlayCard(playerID, cardIndex, cardData);
+        }
+
+        private void UpdateUI()
+        {
+            cardNameText.text = cardData.name;
+        }
     }
 }

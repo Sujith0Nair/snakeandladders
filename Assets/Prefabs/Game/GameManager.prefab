@@ -46,6 +46,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCount: 4
+  playerPrefab: {fileID: 6134495047004191000, guid: d0513a08feac2c547b860be2a64adb06, type: 3}
+  spawnPoint: {fileID: 0}
+  player1Color: {r: 0.14509805, g: 0.5921569, b: 1, a: 1}
+  player2Color: {r: 0.9921569, g: 0.27450982, b: 0.2901961, a: 1}
+  player3Color: {r: 0.9607844, g: 0.8980393, b: 0.36862746, a: 1}
+  player4Color: {r: 0.4039216, g: 0.9803922, b: 0.5176471, a: 1}
 --- !u!1 &3048743980584398780
 GameObject:
   m_ObjectHideFlags: 0
