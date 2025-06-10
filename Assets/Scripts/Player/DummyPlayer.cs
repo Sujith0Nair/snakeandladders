@@ -19,26 +19,52 @@ namespace Player
         {
             playerMoveCoroutine = StartCoroutine(MoveToCellCoroutine(cellIndex));
         }
-        
-        private IEnumerator MoveToCellCoroutine(int cellIndex) 
+
+        private IEnumerator MoveToCellCoroutine(int cellIndex)
         {
-            var allToMoveCells = board.GetPath(CurrentCellIndex, cellIndex);
+            var allToMoveCells = board.GetPathInRange(CurrentCellIndex, cellIndex);
             while (allToMoveCells.Count > 0)
             {
                 var cell = allToMoveCells[0];
-                yield return StartCoroutine(MovePlayer(cell.transform));
                 Debug.Log($"Player moving to cell {cell.CellIndex}", cell.transform.gameObject);
+                yield return StartCoroutine(MovePlayer(cell.transform));
                 allToMoveCells.RemoveAt(0);
                 CurrentCellIndex = cellIndex;
             }
-            playerMoveCoroutine = null;
+            var isOnLadder = board.IsOnLadder(cellIndex, out (int index, Vector3 position) target);
+            if (isOnLadder)
+            {
+                Debug.Log($"Player moving to ladder {CurrentCellIndex}");
+                yield return StartCoroutine(MovePlayer(target.position));
+                CurrentCellIndex = target.index;
+                goto final;
+            }
+            var isOnSnake = board.IsOnSnake(cellIndex, out target);
+            if (isOnSnake)
+            {
+                Debug.Log($"Player moving to snake {CurrentCellIndex}");
+                yield return StartCoroutine(MovePlayer(target.position));
+                CurrentCellIndex = target.index;
+                goto final;
+            }
+            if (CurrentCellIndex == 100)
+            {
+                Debug.Log($"Player won. Cell index: {CurrentCellIndex}");
+            }
+            final:
+                playerMoveCoroutine = null;
         }
         
         private IEnumerator MovePlayer(Transform targetTransform)
         {
-            while ((transform.position - targetTransform.position).sqrMagnitude > 0.1f * 0.1f)
+            yield return StartCoroutine(MovePlayer(targetTransform.position));
+        }
+
+        private IEnumerator MovePlayer(Vector3 targetPosition)
+        {
+            while ((transform.position - targetPosition).sqrMagnitude > 0.1f * 0.1f)
             {
-                transform.position = Vector3.MoveTowards(transform.position, targetTransform.position, moveSpeed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
                 yield return null;
             }
         }
@@ -49,7 +75,7 @@ namespace Player
             if (!Input.GetMouseButtonDown(0)) return;
             if (!Physics.Raycast(mainCamera.ScreenPointToRay(Input.mousePosition), out var hit)) return;
             if (!hit.transform.TryGetComponent(out BoardCell cell)) return;
-            
+
             var cellIndex = cell.CellIndex;
             if (cellIndex <= CurrentCellIndex) return;
             Debug.Log($"Selected cell {cellIndex}");

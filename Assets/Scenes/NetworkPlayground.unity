@@ -316,6 +316,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sessionId: Session1
+--- !u!1 &751033708
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 751033709}
+  m_Layer: 0
+  m_Name: SnakesParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &751033709
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 751033708}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &761086896
 GameObject:
   m_ObjectHideFlags: 0
@@ -577,8 +608,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardParent: {fileID: 898281262}
+  laddersParent: {fileID: 1913303910}
+  snakesParent: {fileID: 751033709}
   startPoint: {fileID: 898281262}
   cellPrefab: {fileID: 435343485884241473, guid: 12ef0c20d8ed77a42a55c56ac9dcee1c, type: 3}
+  snakeCount: 8
+  snakePrefab: {fileID: 3057994146203143081, guid: 88e9a615c5686a4439acc349ca61c8bf, type: 3}
+  ladderCount: 5
+  ladderPrefab: {fileID: 922891675066484419, guid: db991d49f361b482fb87a93d0e7b2d3d, type: 3}
   player: {fileID: 766421069}
 --- !u!4 &898281262
 Transform:
@@ -732,6 +769,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1913303909
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1913303910}
+  m_Layer: 0
+  m_Name: LaddersParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1913303910
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1913303909}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2111049429
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,6 +860,8 @@ SceneRoots:
   - {fileID: 961739753}
   - {fileID: 203844589}
   - {fileID: 898281262}
+  - {fileID: 1913303910}
+  - {fileID: 751033709}
   - {fileID: 766421068}
   - {fileID: 397412802}
   - {fileID: 522081241}
