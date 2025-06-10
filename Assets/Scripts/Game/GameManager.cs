@@ -12,6 +12,7 @@ namespace Game
         public static GameManager Instance;
 
         [SerializeField] private SaLBoard board;
+        [SerializeField] private DeckManager deckManager;
 
         [SerializeField] internal int playerCount;
         [SerializeField] private GameObject playerPrefab;
@@ -36,6 +37,10 @@ namespace Game
         private int currentCellIndexP3;
         private int currentCellIndexP4;
 
+        private bool isRetreatCardInUse;
+        private int retreatCardType;
+        private int totalRetreatMoveCount;
+
         private void Awake()
         {
             if (Instance == null)
@@ -58,7 +63,7 @@ namespace Game
             canPreformAction = true;
 
             currentPlayerTurn = 0;
-            
+
             currentCellIndexP1 = 0;
             currentCellIndexP2 = 0;
             currentCellIndexP3 = 0;
@@ -109,8 +114,22 @@ namespace Game
 
             if (currentPlayerTurn != playerID)
             {
-                // Debug.LogError($"Not Ur Turn!");
+                Debug.LogError($"Not Ur Turn!");
                 return;
+            }
+
+            if (isRetreatCardInUse)
+            {
+                if (cardData.cardType.Equals(CardType.ActionCards) &&
+                    cardData.actionCardType.Equals(ActionCardType.Retreat) &&
+                    cardData.retreatMoveTileCount == retreatCardType)
+                {
+                }
+                else
+                {
+                    Debug.LogError($"In Retreat Card Mode!");
+                    return;
+                }
             }
 
             canPreformAction = false;
@@ -121,6 +140,7 @@ namespace Game
             }
             else if (cardData.cardType.Equals(CardType.ActionCards))
             {
+                HandleActionCard(playerID, cardIndex, cardData);
             }
             else if (cardData.cardType.Equals(CardType.Legendary))
             {
@@ -133,35 +153,76 @@ namespace Game
 
         private void HandleMovementCards(int playerID, int cardIndex, CardSO cardData)
         {
-            var toMoveCell = 0;
+            players[playerID].MoveToCell(GetFinalCellToMove(playerID, cardData.moveTileCount), cardIndex);
+        }
+
+        private void HandleActionCard(int playerID, int cardIndex, CardSO cardData)
+        {
+            if (cardData.actionCardType.Equals(ActionCardType.Retreat))
+            {
+                HandleRetreat(playerID, cardIndex, cardData);
+            }
+            else if (cardData.actionCardType.Equals(ActionCardType.Halt))
+            {
+                HandleHalt();
+            }
+            else if (cardData.actionCardType.Equals(ActionCardType.SwapPositions))
+            {
+                HandleSwapPositions();
+            }
+            else if (cardData.actionCardType.Equals(ActionCardType.LadderVandalism))
+            {
+                HandleLadderVandalism();
+            }
+        }
+
+        private void HandleRetreat(int playerID, int cardIndex, CardSO cardData)
+        {
+            isRetreatCardInUse = true;
+            retreatCardType = cardData.retreatMoveTileCount;
+            totalRetreatMoveCount += cardData.retreatMoveTileCount;
+
+            var finalCellReachedIndex = 0;
 
             if (playerID == 0)
             {
-                toMoveCell = currentCellIndexP1 + cardData.moveTileCount;
+                finalCellReachedIndex = currentCellIndexP1;
             }
             else if (playerID == 1)
             {
-                toMoveCell = currentCellIndexP2 + cardData.moveTileCount;
+                finalCellReachedIndex = currentCellIndexP2;
             }
             else if (playerID == 2)
             {
-                toMoveCell = currentCellIndexP3 + cardData.moveTileCount;
+                finalCellReachedIndex = currentCellIndexP3;
             }
             else if (playerID == 3)
             {
-                toMoveCell = currentCellIndexP4 + cardData.moveTileCount;
-            }
-            else
-            {
-                Debug.LogError($"Invalid player index {playerID}");
+                finalCellReachedIndex = currentCellIndexP4;
             }
 
-            players[playerID].MoveToCell(toMoveCell, cardIndex);
+            FinishPlayerTurn(playerID, cardIndex, finalCellReachedIndex);
+        }
+
+        private void HandleHalt()
+        {
+        }
+
+        private void HandleSwapPositions()
+        {
+        }
+
+        private void HandleLadderVandalism()
+        {
         }
 
         public void FinishPlayerTurn(int playerID, int usedCardIndex, int finalCellReachedIndex)
         {
-            OnPlayerUsedCard?.Invoke(playerID, usedCardIndex);
+            //When Action Happens Without & Card No Need To Trigger Event
+            if (usedCardIndex >= 0)
+            {
+                OnPlayerUsedCard?.Invoke(playerID, usedCardIndex);
+            }
 
             if (playerID == 0)
             {
@@ -192,8 +253,66 @@ namespace Game
             }
 
             OnPlayerTurnFinished?.Invoke(currentPlayerTurn);
-            
-            canPreformAction = true;
+
+            if (isRetreatCardInUse)
+            {
+                CheckForCurrentPlayerHasRetreatCard();
+            }
+            else
+            {
+                canPreformAction = true;
+                ResetCardFlags();
+            }
+        }
+
+        private void CheckForCurrentPlayerHasRetreatCard()
+        {
+            if (!deckManager.CheckIfPlayerHasSameTypeOfRetreatCard(currentPlayerTurn, retreatCardType))
+            {
+                //Player Turn Get Skips & Move Back
+                Debug.LogError($"{currentPlayerTurn} - Go Back {GetFinalCellToMove(currentPlayerTurn, -totalRetreatMoveCount)} Tile");
+                players[currentPlayerTurn].MoveToCell(GetFinalCellToMove(currentPlayerTurn, -totalRetreatMoveCount), -1);
+                isRetreatCardInUse = false;
+            }
+            else
+            {
+                canPreformAction = true;
+            }
+        }
+
+        private void ResetCardFlags()
+        {
+            isRetreatCardInUse = false;
+            retreatCardType = -1;
+            totalRetreatMoveCount = 0;
+        }
+
+        private int GetFinalCellToMove(int playerID, int moveCount)
+        {
+            var toMoveCell = 0;
+
+            if (playerID == 0)
+            {
+                toMoveCell = currentCellIndexP1 + moveCount;
+            }
+            else if (playerID == 1)
+            {
+                toMoveCell = currentCellIndexP2 + moveCount;
+            }
+            else if (playerID == 2)
+            {
+                toMoveCell = currentCellIndexP3 + moveCount;
+            }
+            else if (playerID == 3)
+            {
+                toMoveCell = currentCellIndexP4 + moveCount;
+            }
+            else
+            {
+                Debug.LogError($"Invalid player index {playerID}");
+            }
+
+            return Mathf.Clamp(toMoveCell, 1, 100);
         }
     }
 }

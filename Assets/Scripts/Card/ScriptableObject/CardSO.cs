@@ -12,6 +12,10 @@ namespace Deck
 
         [Header("Movement Type Data")] 
         public int moveTileCount;
+
+        [Header("Action Type Data")] 
+        public ActionCardType actionCardType;
+        public int retreatMoveTileCount;
     }
 
     public enum CardType
@@ -19,5 +23,13 @@ namespace Deck
         MovementCards,
         ActionCards,
         Legendary
+    }
+
+    public enum ActionCardType
+    {
+        Retreat,
+        Halt,
+        SwapPositions,
+        LadderVandalism,
     }
 }

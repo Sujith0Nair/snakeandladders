@@ -141,7 +141,16 @@ namespace Deck
 
             var spawnedCard = Instantiate(deckCardUIPrefab, cardParent).GetComponent<Card>();
             spawnedCard.SetupData(cardData, playerIndex, cardIndex);
+
             playerHands[playerIndex].Add(spawnedCard);
+        }
+
+        public bool CheckIfPlayerHasSameTypeOfRetreatCard(int playerID, int retreatCardType)
+        {
+            return playerHands[playerID]
+                .Find(x => x.cardData.cardType.Equals(CardType.ActionCards) &&
+                           x.cardData.actionCardType.Equals(ActionCardType.Retreat) &&
+                           x.cardData.retreatMoveTileCount == retreatCardType);
         }
     }
 }

@@ -15,3 +15,5 @@ MonoBehaviour:
   cardName: Forced Retreat 2
   cardDeckCount: 4
   cardType: 1
+  moveTileCount: 0
+  retreatMoveTileCount: 3

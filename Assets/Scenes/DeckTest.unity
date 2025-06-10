@@ -612,6 +612,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2120423792 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4422717871734501932, guid: a47ac03fab9e64764bf8d7f898760e06, type: 3}
+  m_PrefabInstance: {fileID: 3634270970609139138}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8229f38cff52b426ca3efe33397bbf4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &77213239626966097
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -676,6 +687,10 @@ PrefabInstance:
       propertyPath: spawnPoint
       value: 
       objectReference: {fileID: 28776520}
+    - target: {fileID: 8459101088597608815, guid: 7db3329a5799d445bb89a82c24ac1ac0, type: 3}
+      propertyPath: deckManager
+      value: 
+      objectReference: {fileID: 2120423792}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
