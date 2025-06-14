@@ -150,10 +150,22 @@ namespace Board
         public List<BoardCell> GetPathInRange(int from, int to)
         {
             var path = new List<BoardCell>();
-            for (var i = from; i < to; i++)
+    
+            if (from <= to)
             {
-                path.Add(cells[i]);
+                for (var i = from; i < to; i++)
+                {
+                    path.Add(cells[i]);
+                }
             }
+            else
+            {
+                for (var i = from - 1; i >= to - 1; i--)
+                {
+                    path.Add(cells[i]);
+                }
+            }
+    
             Debug.Log($"Path from {from} to {to}. Count: {path.Count}");
             return path;
         }

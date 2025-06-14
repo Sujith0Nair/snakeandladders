@@ -145,12 +145,11 @@ namespace Deck
             playerHands[playerIndex].Add(spawnedCard);
         }
 
-        public bool CheckIfPlayerHasSameTypeOfRetreatCard(int playerID, int retreatCardType)
+        public bool CheckIfPlayerHasRetreatCard(int playerID)
         {
             return playerHands[playerID]
                 .Find(x => x.cardData.cardType.Equals(CardType.ActionCards) &&
-                           x.cardData.actionCardType.Equals(ActionCardType.Retreat) &&
-                           x.cardData.retreatMoveTileCount == retreatCardType);
+                           x.cardData.actionCardType.Equals(ActionCardType.Retreat));
         }
     }
 }

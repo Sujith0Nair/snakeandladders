@@ -26,11 +26,14 @@ namespace Player
             model.material.color = playerColor;
         }
 
-        public void MoveToCell(int cellIndex, int lastUsedCardIndex)
+        public void MoveToCell(int moveCount, int lastUsedCardIndex)
         {
             LastUsedCardIndex = lastUsedCardIndex;
 
-            playerMoveCoroutine = StartCoroutine(MoveToCellCoroutine(cellIndex));
+            var finalMoveCount = CurrentCellIndex + moveCount;
+            finalMoveCount = Mathf.Clamp(finalMoveCount, 1, 100);
+
+            playerMoveCoroutine = StartCoroutine(MoveToCellCoroutine(finalMoveCount));
         }
 
         private IEnumerator MoveToCellCoroutine(int cellIndex)
@@ -69,7 +72,8 @@ namespace Player
             }
 
             final:
-            GameManager.Instance.FinishPlayerTurn(playerID, LastUsedCardIndex, CurrentCellIndex);
+
+            GameManager.Instance.FinishPlayerTurn(playerID, LastUsedCardIndex);
             playerMoveCoroutine = null;
         }
 

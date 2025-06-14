@@ -15,3 +15,6 @@ MonoBehaviour:
   cardName: Swap Positions
   cardDeckCount: 3
   cardType: 1
+  moveTileCount: 0
+  actionCardType: 2
+  retreatMoveTileCount: 0
