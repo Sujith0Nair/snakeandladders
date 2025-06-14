@@ -237,6 +237,14 @@ namespace Board
             snakeMap = new();
             AppendSnakesOnBoard_Randomly(availableSnakeIndices);
         }
+        
+        public void BlockAllLadders()
+        {
+            foreach (var ladder in ladderMap.Values)
+            {
+                ladder.BlockLadder();
+            }
+        }
 
         public void UnBlockAllLadders()
         {

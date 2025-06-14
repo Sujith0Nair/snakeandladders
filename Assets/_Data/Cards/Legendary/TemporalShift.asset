@@ -15,3 +15,7 @@ MonoBehaviour:
   cardName: Temporal Shift
   cardDeckCount: 1
   cardType: 2
+  moveTileCount: 0
+  actionCardType: 0
+  retreatMoveTileCount: 0
+  legendaryCardType: 2

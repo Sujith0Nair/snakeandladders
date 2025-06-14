@@ -43,9 +43,8 @@ namespace Game
         private bool isHaltCardInUse;
         private int haltPlayerID;
 
-        private bool isLadderBlockCardInUse;
         private bool checkForLadderSelectRaycast;
-
+        
         private int lastUsedCardIndex;
 
         private void Awake()
@@ -175,6 +174,7 @@ namespace Game
             }
             else if (cardData.cardType.Equals(CardType.Legendary))
             {
+                HandleLegendaryCard(playerID, cardIndex, cardData);
             }
             else
             {
@@ -205,6 +205,30 @@ namespace Game
             {
                 HandleLadderVandalism(cardIndex);
             }
+            else
+            {
+                Debug.LogError($"Invalid Action card type {cardData.cardType}");
+            }
+        }
+
+        private void HandleLegendaryCard(int playerID, int cardIndex, CardSO cardData)
+        {
+            if (cardData.legendaryCardType.Equals(LegendaryCardType.TemporalShift))
+            {
+                HandleTemporalShift();
+            }
+            else if (cardData.legendaryCardType.Equals(LegendaryCardType.LadderLockout))
+            {
+                HandleLadderLockOut(playerID, cardIndex);
+            }
+            else if (cardData.legendaryCardType.Equals(LegendaryCardType.SnakeTamer))
+            {
+                HandleSnakeTamer();
+            }
+            else
+            {
+                Debug.LogError($"Invalid Legendary card type {cardData.cardType}");
+            }
         }
 
         private void HandleRetreat(int playerID, int cardIndex, CardSO cardData)
@@ -230,9 +254,24 @@ namespace Game
 
         private void HandleLadderVandalism(int cardIndex)
         {
-            isLadderBlockCardInUse = true;
             checkForLadderSelectRaycast = true;
             lastUsedCardIndex = cardIndex;
+        }
+
+        private void HandleTemporalShift()
+        {
+            
+        }
+
+        private void HandleLadderLockOut(int playerID, int cardIndex)
+        {
+            board.BlockAllLadders();
+            FinishPlayerTurn(playerID, cardIndex);
+        }
+
+        private void HandleSnakeTamer()
+        {
+            
         }
 
         public void FinishPlayerTurn(int playerID, int usedCardIndex)
@@ -270,9 +309,6 @@ namespace Game
 
         private void RoundCompleted()
         {
-            //UnBlock All Ladders
-            board.UnBlockAllLadders();
-
             var randomDiceRoll = Random.Range(1, 7);
             Debug.LogError($"Dice Roll By AI : {randomDiceRoll}");
 
@@ -281,6 +317,9 @@ namespace Game
             // {
             //     board.RandomizeSnake();
             // }
+            
+            //UnBlock All Ladders
+            board.UnBlockAllLadders();
 
             TurnCompleteCheck();
         }
@@ -345,7 +384,6 @@ namespace Game
 
         private void ResetLadderBlockFlags()
         {
-            isLadderBlockCardInUse = false;
             lastUsedCardIndex = -1;
         }
 
