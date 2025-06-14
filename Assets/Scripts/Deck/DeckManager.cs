@@ -15,6 +15,8 @@ namespace Deck
         [SerializeField] private GameObject player3CardAttachPoint;
         [SerializeField] private GameObject player4CardAttachPoint;
 
+        [SerializeField] private List<GameObject> haltUIs;
+
         public List<CardSO> allCardTypes;
 
         private List<CardSO> deck;
@@ -35,6 +37,8 @@ namespace Deck
 
             GameManager.Instance.OnPlayerUsedCard += OnPlayerUsedCard;
 
+            ResetHaltUIs();
+
             InitializeDeck();
             ShuffleDeck();
             DealCardsToPlayers(deckSize);
@@ -48,9 +52,10 @@ namespace Deck
         private void OnPlayerUsedCard(int playerID, int cardIndex)
         {
             // Debug.LogError($"Player Index -> {playerID} & Card Index -> {cardIndex}");
-
             var usedCard = playerHands[playerID][cardIndex].cardData;
-            playerHands[playerID][cardIndex].UpdateData(GetNewCardFromPile());
+            var newCard = GetNewCardFromPile();
+            Debug.LogError($"ID {playerID + 1} Used Card -> {usedCard.cardName} & New Card -> {newCard.cardName}");
+            playerHands[playerID][cardIndex].UpdateData(newCard);
             AddCardToPile(usedCard);
         }
 
@@ -103,6 +108,14 @@ namespace Deck
             deck.Clear();
         }
 
+        public void ResetHaltUIs()
+        {
+            foreach (var haltUI in haltUIs)
+            {
+                haltUI.SetActive(false);
+            }
+        }
+
         private CardSO GetNewCardFromPile()
         {
             return pile.Dequeue();
@@ -150,6 +163,17 @@ namespace Deck
             return playerHands[playerID]
                 .Find(x => x.cardData.cardType.Equals(CardType.ActionCards) &&
                            x.cardData.actionCardType.Equals(ActionCardType.Retreat));
+        }
+
+        public void ShowHaltUI(int currentPlayerTurn)
+        {
+            for (int i = 0; i < GameManager.Instance.playerCount; i++)
+            {
+                if (i != currentPlayerTurn)
+                {
+                    haltUIs[i].SetActive(true);
+                }
+            }
         }
     }
 }

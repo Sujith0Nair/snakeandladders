@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 622efa1ac235b4956aaa16b44ce25e49, type: 3}
   m_Name: Move2
   m_EditorClassIdentifier: 
-  cardName: 'Move 1 '
+  cardName: Move 2
   cardDeckCount: 10
   cardType: 0
   moveTileCount: 2
+  actionCardType: 0
+  retreatMoveTileCount: 0

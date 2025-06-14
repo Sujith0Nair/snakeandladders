@@ -45,7 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 723f5feb713ff46ab9bdb76803333178, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerCount: 4
+  board: {fileID: 0}
+  deckManager: {fileID: 0}
+  playerCount: 2
   playerPrefab: {fileID: 6134495047004191000, guid: d0513a08feac2c547b860be2a64adb06, type: 3}
   spawnPoint: {fileID: 0}
   player1Color: {r: 0.14509805, g: 0.5921569, b: 1, a: 1}

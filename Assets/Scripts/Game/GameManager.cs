@@ -36,6 +36,10 @@ namespace Game
         private bool isRetreatCardInUse;
         private int totalRetreatMoveCount;
 
+        private bool isHaltCardInUse;
+        private int haltPlayerID;
+        private int lastUsedCardIndex;
+
         private void Awake()
         {
             if (Instance == null)
@@ -122,8 +126,6 @@ namespace Game
                 }
             }
 
-            Debug.LogError($"Player {playerID + 1} has played card {cardData.cardType}");
-
             canPreformAction = false;
 
             if (cardData.cardType.Equals(CardType.MovementCards))
@@ -156,7 +158,7 @@ namespace Game
             }
             else if (cardData.actionCardType.Equals(ActionCardType.Halt))
             {
-                HandleHalt();
+                HandleHalt(cardIndex);
             }
             else if (cardData.actionCardType.Equals(ActionCardType.SwapPositions))
             {
@@ -176,8 +178,11 @@ namespace Game
             FinishPlayerTurn(playerID, cardIndex);
         }
 
-        private void HandleHalt()
+        private void HandleHalt(int cardIndex)
         {
+            lastUsedCardIndex = cardIndex;
+            isHaltCardInUse = true;
+            deckManager.ShowHaltUI(currentPlayerTurn);
         }
 
         private void HandleSwapPositions()
@@ -197,12 +202,17 @@ namespace Game
             }
             else
             {
-                //Player Can Still play if some action event happened
+                //Player Can Still play if some action event happened (Retreat)
                 canPreformAction = true;
-                ResetCardFlags();
+                ResetRetreatCardFlags();
                 return;
             }
 
+            UpdateToNextPlayerTurn();
+        }
+
+        private void UpdateToNextPlayerTurn()
+        {
             currentPlayerTurn++;
 
             if (currentPlayerTurn >= playerCount)
@@ -237,10 +247,14 @@ namespace Game
             {
                 CheckForCurrentPlayerHasRetreatCard();
             }
+            else if (isHaltCardInUse && haltPlayerID == currentPlayerTurn)
+            {
+                SkipPlayerTurn();
+            }
             else
             {
                 canPreformAction = true;
-                ResetCardFlags();
+                ResetRetreatCardFlags();
             }
         }
 
@@ -258,10 +272,31 @@ namespace Game
             }
         }
 
-        private void ResetCardFlags()
+        private void SkipPlayerTurn()
+        {
+            Debug.LogError($"Player {currentPlayerTurn + 1} is Skipped");
+            ResetHaltCardFlags();
+            UpdateToNextPlayerTurn();
+        }
+
+        private void ResetRetreatCardFlags()
         {
             isRetreatCardInUse = false;
             totalRetreatMoveCount = 0;
+        }
+
+        private void ResetHaltCardFlags()
+        {
+            isHaltCardInUse = false;
+            haltPlayerID = -1;
+        }
+
+        public void BlockPlayer(int playerID)
+        {
+            Debug.LogError($"Player {playerID + 1} is Selected for Skip Turn");
+            deckManager.ResetHaltUIs();
+            haltPlayerID = playerID;
+            FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
         }
     }
 }

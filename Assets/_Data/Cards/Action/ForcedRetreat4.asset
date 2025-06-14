@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 622efa1ac235b4956aaa16b44ce25e49, type: 3}
   m_Name: ForcedRetreat4
   m_EditorClassIdentifier: 
-  cardName: Forced Retreat 2
+  cardName: Forced Retreat 4
   cardDeckCount: 3
   cardType: 1
   moveTileCount: 0
+  actionCardType: 0
   retreatMoveTileCount: 4

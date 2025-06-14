@@ -50,6 +50,11 @@ MonoBehaviour:
   player2CardAttachPoint: {fileID: 0}
   player3CardAttachPoint: {fileID: 0}
   player4CardAttachPoint: {fileID: 0}
+  haltUIs:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   allCardTypes:
   - {fileID: 11400000, guid: 1138767010b4b4044be4bd29ba2be43a, type: 2}
   - {fileID: 11400000, guid: 8f9f717659f8f4fff9cd76d808c00a9a, type: 2}
