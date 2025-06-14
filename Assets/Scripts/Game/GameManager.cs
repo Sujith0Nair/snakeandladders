@@ -24,6 +24,10 @@ namespace Game
         [SerializeField] private Color player3Color;
         [SerializeField] private Color player4Color;
 
+        [SerializeField] private Camera raycastCamera;
+        [SerializeField] private LayerMask ladderLayer = -1;
+        [SerializeField] private float maxRaycastDistance = 100f;
+
         internal int currentPlayerTurn;
 
         public Action<int> OnPlayerTurnFinished;
@@ -38,6 +42,10 @@ namespace Game
 
         private bool isHaltCardInUse;
         private int haltPlayerID;
+
+        private bool isLadderBlockCardInUse;
+        private bool checkForLadderSelectRaycast;
+
         private int lastUsedCardIndex;
 
         private void Awake()
@@ -66,6 +74,17 @@ namespace Game
             players = new List<PlayerController>();
 
             SpawnPlayer();
+        }
+
+        private void Update()
+        {
+            if (checkForLadderSelectRaycast)
+            {
+                if (Input.GetMouseButtonUp(0))
+                {
+                    SelectLadder();
+                }
+            }
         }
 
         private void SpawnPlayer()
@@ -97,6 +116,24 @@ namespace Game
             }
 
             return player4Color;
+        }
+
+        private void SelectLadder()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            if (Physics.Raycast(ray, out RaycastHit hit, maxRaycastDistance, ladderLayer))
+            {
+                GameObject selectedObject = hit.collider.gameObject;
+                Debug.LogError($"Selected Ladder: {selectedObject.name}", selectedObject);
+
+                var ladderScript = selectedObject.GetComponent<Ladder>();
+                ladderScript.BlockLadder();
+
+                checkForLadderSelectRaycast = false;
+                FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
+                ResetLadderBlockFlags();
+            }
         }
 
         public void PlayCard(int playerID, int cardIndex, CardSO cardData)
@@ -166,7 +203,7 @@ namespace Game
             }
             else if (cardData.actionCardType.Equals(ActionCardType.LadderVandalism))
             {
-                HandleLadderVandalism();
+                HandleLadderVandalism(cardIndex);
             }
         }
 
@@ -191,8 +228,11 @@ namespace Game
             deckManager.ShowSwapPositionUI(currentPlayerTurn);
         }
 
-        private void HandleLadderVandalism()
+        private void HandleLadderVandalism(int cardIndex)
         {
+            isLadderBlockCardInUse = true;
+            checkForLadderSelectRaycast = true;
+            lastUsedCardIndex = cardIndex;
         }
 
         public void FinishPlayerTurn(int playerID, int usedCardIndex)
@@ -230,6 +270,9 @@ namespace Game
 
         private void RoundCompleted()
         {
+            //UnBlock All Ladders
+            board.UnBlockAllLadders();
+
             var randomDiceRoll = Random.Range(1, 7);
             Debug.LogError($"Dice Roll By AI : {randomDiceRoll}");
 
@@ -295,6 +338,17 @@ namespace Game
             lastUsedCardIndex = -1;
         }
 
+        private void ResetSwapPositionFlags()
+        {
+            lastUsedCardIndex = -1;
+        }
+
+        private void ResetLadderBlockFlags()
+        {
+            isLadderBlockCardInUse = false;
+            lastUsedCardIndex = -1;
+        }
+
         public void BlockPlayer(int playerID)
         {
             Debug.LogError($"Player {playerID + 1} is Selected for Skip Turn");
@@ -330,6 +384,8 @@ namespace Game
             players[playerID].MoveToCell(swapPlayerMoveCount, -1, false);
 
             FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
+
+            ResetSwapPositionFlags();
         }
     }
 }

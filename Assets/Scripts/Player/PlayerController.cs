@@ -49,7 +49,8 @@ namespace Player
             }
 
             var isOnLadder = board.IsOnLadder(cellIndex, out (int index, Vector3 position) target);
-            if (isOnLadder)
+            var canLadderBeUsed = board.CheckIfLadderIsBlocked(cellIndex);
+            if (isOnLadder && !canLadderBeUsed)
             {
                 Debug.Log($"Player moving to ladder {CurrentCellIndex}");
                 yield return StartCoroutine(MovePlayer(target.position));

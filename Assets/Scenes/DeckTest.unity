@@ -223,6 +223,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &314592634 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2260833245984713302, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
+  m_PrefabInstance: {fileID: 8172570334875707661}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &402291567 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4928139778422094624, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
@@ -722,6 +727,10 @@ PrefabInstance:
       propertyPath: deckManager
       value: 
       objectReference: {fileID: 2120423792}
+    - target: {fileID: 8459101088597608815, guid: 7db3329a5799d445bb89a82c24ac1ac0, type: 3}
+      propertyPath: raycastCamera
+      value: 
+      objectReference: {fileID: 1411263375}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -818,7 +827,7 @@ PrefabInstance:
     - target: {fileID: 4422717871734501932, guid: a47ac03fab9e64764bf8d7f898760e06, type: 3}
       propertyPath: 'swapPlayerUIs.Array.data[2]'
       value: 
-      objectReference: {fileID: 8172570334875707664}
+      objectReference: {fileID: 314592634}
     - target: {fileID: 4422717871734501932, guid: a47ac03fab9e64764bf8d7f898760e06, type: 3}
       propertyPath: 'swapPlayerUIs.Array.data[3]'
       value: 
@@ -975,11 +984,6 @@ MonoBehaviour:
 --- !u!1 &8172570334875707663 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8114410338392092203, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
-  m_PrefabInstance: {fileID: 8172570334875707661}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &8172570334875707664 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2260833245984713302, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
   m_PrefabInstance: {fileID: 8172570334875707661}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &8172570334875707665 stripped

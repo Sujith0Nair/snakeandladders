@@ -134,6 +134,12 @@ namespace Board
             return true;
         }
 
+        public bool CheckIfLadderIsBlocked(int currentIndex)
+        {
+            if (!ladderMap.TryGetValue(currentIndex, out var ladder)) return false;
+            return ladder.IsBlocked;
+        }
+
         public bool IsOnSnake(int currentIndex, out (int, Vector3) snakeRange)
         {
             snakeRange = default;
@@ -230,6 +236,14 @@ namespace Board
             ClearSnakes();
             snakeMap = new();
             AppendSnakesOnBoard_Randomly(availableSnakeIndices);
+        }
+
+        public void UnBlockAllLadders()
+        {
+            foreach (var ladder in ladderMap.Values)
+            {
+                ladder.UnblockLadder();
+            }
         }
     }
 }
