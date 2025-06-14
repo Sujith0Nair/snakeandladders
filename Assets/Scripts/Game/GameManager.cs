@@ -4,6 +4,7 @@ using Board;
 using Deck;
 using Player;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Game
 {
@@ -207,8 +208,29 @@ namespace Game
             if (currentPlayerTurn >= playerCount)
             {
                 currentPlayerTurn = 0;
+                RoundCompleted();
+            }
+            else
+            {
+                TurnCompleteCheck();
+            }
+        }
+
+        private void RoundCompleted()
+        {
+            var randomDiceRoll = Random.Range(1, 7);
+            Debug.LogError($"Dice Roll By AI : {randomDiceRoll}");
+
+            if (randomDiceRoll == 1 || randomDiceRoll == 6)
+            {
+                board.RandomizeSnake();
             }
 
+            TurnCompleteCheck();
+        }
+
+        private void TurnCompleteCheck()
+        {
             OnPlayerTurnFinished?.Invoke(currentPlayerTurn);
 
             if (isRetreatCardInUse)

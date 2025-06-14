@@ -17,15 +17,20 @@ namespace Board
         [SerializeField, Range(1, 10)] private int ladderCount;
         [SerializeField] private GameObject ladderPrefab;
         [SerializeField] private DummyPlayer player;
-        
+
         private List<BoardCell> cells = new();
         private Dictionary<int, Ladder> ladderMap = new();
         private Dictionary<int, Snake> snakeMap = new();
+
+        private List<int> availableSnakeIndices = new();
 
         private void Start()
         {
             GenerateBoard();
             AppendLaddersOnBoard_Randomly(out var leftOverIndices);
+
+            availableSnakeIndices = leftOverIndices;
+
             AppendSnakesOnBoard_Randomly(leftOverIndices);
         }
 
@@ -37,7 +42,8 @@ namespace Board
                 for (var column = 0; column < 10; column++)
                 {
                     var resultantCol = Mathf.Abs(column - delta);
-                    var cell = Instantiate(cellPrefab, startPoint.position + new Vector3(resultantCol * 2, 0, row * 2), Quaternion.identity);
+                    var cell = Instantiate(cellPrefab, startPoint.position + new Vector3(resultantCol * 2, 0, row * 2),
+                        Quaternion.identity);
                     cell.transform.SetParent(boardParent);
                     var cellId = row * 10 + column + 1;
                     cell.name = $"BoardCell_{cellId}";
@@ -45,6 +51,7 @@ namespace Board
                     cellComponent.Init(cellId);
                     cells.Add(cellComponent);
                 }
+
                 delta = (row + 1) % 2 * 9;
             }
         }
@@ -76,7 +83,8 @@ namespace Board
                 var direction = toCell.transform.position - fromCell.transform.position;
                 ladder.transform.forward = direction;
                 ladder.transform.position = (fromCell.transform.position + toCell.transform.position) / 2;
-                ladder.transform.localScale = new Vector3(ladder.transform.localScale.x, ladder.transform.localScale.y, direction.magnitude);
+                ladder.transform.localScale = new Vector3(ladder.transform.localScale.x, ladder.transform.localScale.y,
+                    direction.magnitude);
                 var ladderComponent = ladder.GetComponent<Ladder>();
                 ladderComponent.Init(fromCell.CellIndex, toCell.CellIndex);
                 ladderMap.Add(fromCell.CellIndex, ladderComponent);
@@ -98,7 +106,7 @@ namespace Board
                 indicesList.RemoveAt(fromIndex);
                 indicesList.RemoveAt(toIndex);
             }
-            
+
             foreach (var (from, to) in snakePoints)
             {
                 var snake = Instantiate(snakePrefab, startPoint.position, Quaternion.identity);
@@ -143,6 +151,7 @@ namespace Board
             {
                 path.Add(cells[i]);
             }
+
             Debug.Log($"Path from {from} to {to}. Count: {path.Count}");
             return path;
         }
@@ -150,7 +159,7 @@ namespace Board
         public List<BoardCell> GetPathInRange(int from, int to)
         {
             var path = new List<BoardCell>();
-    
+
             if (from <= to)
             {
                 for (var i = from; i < to; i++)
@@ -165,7 +174,7 @@ namespace Board
                     path.Add(cells[i]);
                 }
             }
-    
+
             Debug.Log($"Path from {from} to {to}. Count: {path.Count}");
             return path;
         }
@@ -183,34 +192,44 @@ namespace Board
             {
                 Destroy(cell.gameObject);
             }
+
             cells.Clear();
             cells = null;
         }
-        
+
         private void ClearLadders()
         {
             foreach (var (_, ladder) in ladderMap)
             {
                 if (ladder)
                 {
-                    Destroy(ladder.gameObject);   
+                    Destroy(ladder.gameObject);
                 }
             }
+
             ladderMap.Clear();
             ladderMap = null;
         }
-        
+
         private void ClearSnakes()
         {
             foreach (var (_, snake) in snakeMap)
             {
                 if (snake)
                 {
-                    Destroy(snake.gameObject);   
+                    Destroy(snake.gameObject);
                 }
             }
+
             snakeMap.Clear();
             snakeMap = null;
+        }
+
+        public void RandomizeSnake()
+        {
+            ClearSnakes();
+            snakeMap = new();
+            AppendSnakesOnBoard_Randomly(availableSnakeIndices);
         }
     }
 }
