@@ -10,7 +10,7 @@ namespace Player
         [SerializeField] private MeshRenderer model;
         [SerializeField] private float moveSpeed;
 
-        private int CurrentCellIndex { get; set; }
+        public int CurrentCellIndex { get; private set; }
         private int LastUsedCardIndex { get; set; }
 
         private SaLBoard board;
@@ -26,17 +26,17 @@ namespace Player
             model.material.color = playerColor;
         }
 
-        public void MoveToCell(int moveCount, int lastUsedCardIndex)
+        public void MoveToCell(int moveCount, int lastUsedCardIndex, bool shouldTriggerFinishMove)
         {
             LastUsedCardIndex = lastUsedCardIndex;
 
             var finalMoveCount = CurrentCellIndex + moveCount;
             finalMoveCount = Mathf.Clamp(finalMoveCount, 1, 100);
 
-            playerMoveCoroutine = StartCoroutine(MoveToCellCoroutine(finalMoveCount));
+            playerMoveCoroutine = StartCoroutine(MoveToCellCoroutine(finalMoveCount, shouldTriggerFinishMove));
         }
 
-        private IEnumerator MoveToCellCoroutine(int cellIndex)
+        private IEnumerator MoveToCellCoroutine(int cellIndex, bool shouldTriggerFinishMove)
         {
             var allToMoveCells = board.GetPathInRange(CurrentCellIndex, cellIndex);
             while (allToMoveCells.Count > 0)
@@ -73,7 +73,11 @@ namespace Player
 
             final:
 
-            GameManager.Instance.FinishPlayerTurn(playerID, LastUsedCardIndex);
+            if (shouldTriggerFinishMove)
+            {
+                GameManager.Instance.FinishPlayerTurn(playerID, LastUsedCardIndex);
+            }
+
             playerMoveCoroutine = null;
         }
 

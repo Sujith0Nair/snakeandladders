@@ -16,6 +16,7 @@ namespace Deck
         [SerializeField] private GameObject player4CardAttachPoint;
 
         [SerializeField] private List<GameObject> haltUIs;
+        [SerializeField] private List<GameObject> swapPlayerUIs;
 
         public List<CardSO> allCardTypes;
 
@@ -38,6 +39,7 @@ namespace Deck
             GameManager.Instance.OnPlayerUsedCard += OnPlayerUsedCard;
 
             ResetHaltUIs();
+            ResetSwapPlayerUIs();
 
             InitializeDeck();
             ShuffleDeck();
@@ -116,6 +118,14 @@ namespace Deck
             }
         }
 
+        public void ResetSwapPlayerUIs()
+        {
+            foreach (var swapPlayerUI in swapPlayerUIs)
+            {
+                swapPlayerUI.SetActive(false);
+            }
+        }
+
         private CardSO GetNewCardFromPile()
         {
             return pile.Dequeue();
@@ -172,6 +182,17 @@ namespace Deck
                 if (i != currentPlayerTurn)
                 {
                     haltUIs[i].SetActive(true);
+                }
+            }
+        }
+
+        public void ShowSwapPositionUI(int currentPlayerTurn)
+        {
+            for (int i = 0; i < GameManager.Instance.playerCount; i++)
+            {
+                if (i != currentPlayerTurn)
+                {
+                    swapPlayerUIs[i].SetActive(true);
                 }
             }
         }

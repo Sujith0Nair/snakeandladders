@@ -147,7 +147,7 @@ namespace Game
 
         private void HandleMovementCards(int playerID, int cardIndex, CardSO cardData)
         {
-            players[playerID].MoveToCell(cardData.moveTileCount, cardIndex);
+            players[playerID].MoveToCell(cardData.moveTileCount, cardIndex, true);
         }
 
         private void HandleActionCard(int playerID, int cardIndex, CardSO cardData)
@@ -162,7 +162,7 @@ namespace Game
             }
             else if (cardData.actionCardType.Equals(ActionCardType.SwapPositions))
             {
-                HandleSwapPositions();
+                HandleSwapPositions(cardIndex);
             }
             else if (cardData.actionCardType.Equals(ActionCardType.LadderVandalism))
             {
@@ -185,8 +185,10 @@ namespace Game
             deckManager.ShowHaltUI(currentPlayerTurn);
         }
 
-        private void HandleSwapPositions()
+        private void HandleSwapPositions(int cardIndex)
         {
+            lastUsedCardIndex = cardIndex;
+            deckManager.ShowSwapPositionUI(currentPlayerTurn);
         }
 
         private void HandleLadderVandalism()
@@ -231,10 +233,11 @@ namespace Game
             var randomDiceRoll = Random.Range(1, 7);
             Debug.LogError($"Dice Roll By AI : {randomDiceRoll}");
 
-            if (randomDiceRoll == 1 || randomDiceRoll == 6)
-            {
-                board.RandomizeSnake();
-            }
+            //TODO :: UnComment after Fix By Sujith
+            // if (randomDiceRoll == 1 || randomDiceRoll == 6)
+            // {
+            //     board.RandomizeSnake();
+            // }
 
             TurnCompleteCheck();
         }
@@ -263,7 +266,7 @@ namespace Game
             if (!deckManager.CheckIfPlayerHasRetreatCard(currentPlayerTurn))
             {
                 //Player Move Back
-                players[currentPlayerTurn].MoveToCell(-totalRetreatMoveCount, -1);
+                players[currentPlayerTurn].MoveToCell(-totalRetreatMoveCount, -1, true);
                 isRetreatCardInUse = false;
             }
             else
@@ -289,6 +292,7 @@ namespace Game
         {
             isHaltCardInUse = false;
             haltPlayerID = -1;
+            lastUsedCardIndex = -1;
         }
 
         public void BlockPlayer(int playerID)
@@ -296,6 +300,35 @@ namespace Game
             Debug.LogError($"Player {playerID + 1} is Selected for Skip Turn");
             deckManager.ResetHaltUIs();
             haltPlayerID = playerID;
+            FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
+        }
+
+        public void SwapPlayer(int playerID)
+        {
+            Debug.LogError($"Player {playerID + 1} is Selected for Swap Turn");
+
+            deckManager.ResetSwapPlayerUIs();
+
+            var currentPlayerCellIndex = players[currentPlayerTurn].CurrentCellIndex;
+            var swapPlayerCellIndex = players[playerID].CurrentCellIndex;
+            var currentPlayerMoveCount = 0;
+            var swapPlayerMoveCount = 0;
+
+            //Check if we need Move Forward
+            if (currentPlayerCellIndex <= swapPlayerCellIndex)
+            {
+                currentPlayerMoveCount = swapPlayerCellIndex - currentPlayerCellIndex;
+                swapPlayerMoveCount = -currentPlayerMoveCount;
+            }
+            else
+            {
+                currentPlayerMoveCount = swapPlayerCellIndex - currentPlayerCellIndex;
+                swapPlayerMoveCount = -currentPlayerMoveCount;
+            }
+
+            players[currentPlayerTurn].MoveToCell(currentPlayerMoveCount, -1, false);
+            players[playerID].MoveToCell(swapPlayerMoveCount, -1, false);
+
             FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
         }
     }
