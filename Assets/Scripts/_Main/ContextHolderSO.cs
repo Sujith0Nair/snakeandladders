@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace _Main
 {
-    [CreateAssetMenu(fileName = "ContextHolder", menuName = "SnL/ContextHolder", order = 0)]
+    [CreateAssetMenu(fileName = "ContextHolder", menuName = "Scriptable Objects/ContextHolder", order = 0)]
     public sealed class ContextHolderSo : ScriptableObject
     {
         [SerializeField] private Context[] contexts;
