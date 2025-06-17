@@ -44,7 +44,7 @@ namespace Game
         private int haltPlayerID;
 
         private bool checkForLadderSelectRaycast;
-        
+
         private int lastUsedCardIndex;
 
         private void Awake()
@@ -184,7 +184,15 @@ namespace Game
 
         private void HandleMovementCards(int playerID, int cardIndex, CardSO cardData)
         {
-            players[playerID].MoveToCell(cardData.moveTileCount, cardIndex, true);
+            //To Check If Player is Valid Move Card
+            if (players[playerID].CurrentCellIndex + playerID <= 100)
+            {
+                players[playerID].MoveToCell(cardData.moveTileCount, cardIndex, true);
+            }
+            else
+            {
+                Debug.LogError($"Cant Choose This Card!");
+            }
         }
 
         private void HandleActionCard(int playerID, int cardIndex, CardSO cardData)
@@ -260,7 +268,6 @@ namespace Game
 
         private void HandleTemporalShift()
         {
-            
         }
 
         private void HandleLadderLockOut(int playerID, int cardIndex)
@@ -271,7 +278,6 @@ namespace Game
 
         private void HandleSnakeTamer()
         {
-            
         }
 
         public void FinishPlayerTurn(int playerID, int usedCardIndex)
@@ -317,13 +323,13 @@ namespace Game
             // {
             //     board.RandomizeSnake();
             // }
-            
+
             //Make Sure Player Moves In Same Index To Trigger Snake Check
             foreach (var player in players)
             {
                 player.MoveToCell(0, -1, false);
             }
-            
+
             //UnBlock All Ladders
             board.UnBlockAllLadders();
 
