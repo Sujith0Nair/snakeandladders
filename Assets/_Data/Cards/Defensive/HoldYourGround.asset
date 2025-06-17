@@ -10,8 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 622efa1ac235b4956aaa16b44ce25e49, type: 3}
-  m_Name: SnakeTamer
+  m_Name: HoldYourGround
   m_EditorClassIdentifier: 
-  cardName: Snake Tamer
-  cardDeckCount: 1
+  cardName: Hold Your Ground
+  cardDeckCount: 4
   cardType: 2
+  moveTileCount: 0
+  actionCardType: 0
+  retreatMoveTileCount: 0
+  defensiveCardType: 1

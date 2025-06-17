@@ -17,15 +17,15 @@ namespace Deck
         public ActionCardType actionCardType;
         public int retreatMoveTileCount;
 
-        [Header("Legendary Card Data")] 
-        public LegendaryCardType legendaryCardType;
+        [Header("Defensive Card Data")] 
+        public DefensiveCardType defensiveCardType;
     }
 
     public enum CardType
     {
         MovementCards,
         ActionCards,
-        Legendary
+        DefensiveCards
     }
 
     public enum ActionCardType
@@ -38,9 +38,9 @@ namespace Deck
         LadderLockout
     }
 
-    public enum LegendaryCardType
+    public enum DefensiveCardType
     {
         SnakeTamer,
-        TemporalShift
+        HoldYourGround
     }
 }

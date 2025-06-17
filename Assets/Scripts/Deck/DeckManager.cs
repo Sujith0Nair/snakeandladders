@@ -238,5 +238,27 @@ namespace Deck
                 }
             }
         }
+
+        public bool HasHoldYourGround(int playerID, out int cardIndex)
+        {
+            var foundCard = playerHands[playerID]
+                .Find(x => x.cardData.cardType.Equals(CardType.DefensiveCards) &&
+                           x.cardData.defensiveCardType.Equals(DefensiveCardType.HoldYourGround));
+
+            cardIndex = foundCard ? foundCard.cardIndex : -1;
+
+            return foundCard;
+        }
+
+        public bool HasSnakeTamer(int playerID, out int cardIndex)
+        {
+            var foundCard = playerHands[playerID]
+                .Find(x => x.cardData.cardType.Equals(CardType.DefensiveCards) &&
+                           x.cardData.defensiveCardType.Equals(DefensiveCardType.SnakeTamer));
+
+            cardIndex = foundCard ? foundCard.cardIndex : -1;
+
+            return foundCard;
+        }
     }
 }

@@ -9,8 +9,9 @@ namespace Deck
         [SerializeField] private TextMeshProUGUI cardNameText;
 
         public CardSO cardData { get; private set; }
+        public int cardIndex { get; private set; }
+
         private int playerID;
-        private int cardIndex;
 
         public void SetupData(CardSO cardData, int playerID, int cardIndex)
         {

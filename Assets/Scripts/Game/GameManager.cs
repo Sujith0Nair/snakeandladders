@@ -174,9 +174,10 @@ namespace Game
             {
                 HandleActionCard(playerID, cardIndex, cardData);
             }
-            else if (cardData.cardType.Equals(CardType.Legendary))
+            else if (cardData.cardType.Equals(CardType.DefensiveCards))
             {
-                HandleLegendaryCard(playerID, cardIndex, cardData);
+                Debug.LogError($"Can't Use Defensive Card");
+                canPreformAction = true;
             }
             else
             {
@@ -229,22 +230,6 @@ namespace Game
             }
         }
 
-        private void HandleLegendaryCard(int playerID, int cardIndex, CardSO cardData)
-        {
-            if (cardData.legendaryCardType.Equals(LegendaryCardType.TemporalShift))
-            {
-                HandleTemporalShift();
-            }
-            else if (cardData.legendaryCardType.Equals(LegendaryCardType.SnakeTamer))
-            {
-                HandleSnakeTamer();
-            }
-            else
-            {
-                Debug.LogError($"Invalid Legendary card type {cardData.cardType}");
-            }
-        }
-
         private void HandleRetreat(int playerID, int cardIndex, CardSO cardData)
         {
             isRetreatCardInUse = true;
@@ -278,18 +263,20 @@ namespace Game
             deckManager.ShowForcePlayerToSnakeUI(currentPlayerTurn);
         }
 
-        private void HandleTemporalShift()
-        {
-        }
-
         private void HandleLadderLockOut(int playerID, int cardIndex)
         {
             board.BlockAllLadders();
             FinishPlayerTurn(playerID, cardIndex);
         }
 
-        private void HandleSnakeTamer()
+        private void HandleSnakeTamer(int playerID, int cardIndex)
         {
+            OnPlayerUsedCard?.Invoke(playerID, cardIndex);
+        }
+
+        private void HandleHoldYourGround(int playerID, int cardIndex)
+        {
+            OnPlayerUsedCard?.Invoke(playerID, cardIndex);
         }
 
         public void FinishPlayerTurn(int playerID, int usedCardIndex)
@@ -438,25 +425,34 @@ namespace Game
 
             deckManager.ResetSwapPlayerUIs();
 
-            var currentPlayerCellIndex = players[currentPlayerTurn].CurrentCellIndex;
-            var swapPlayerCellIndex = players[playerID].CurrentCellIndex;
-            var currentPlayerMoveCount = 0;
-            var swapPlayerMoveCount = 0;
-
-            //Check if we need Move Forward
-            if (currentPlayerCellIndex <= swapPlayerCellIndex)
+            //Check if We Defence Card Hold Your Ground
+            if (!deckManager.HasHoldYourGround(playerID, out var specialCardIndex))
             {
-                currentPlayerMoveCount = swapPlayerCellIndex - currentPlayerCellIndex;
-                swapPlayerMoveCount = -currentPlayerMoveCount;
+                var currentPlayerCellIndex = players[currentPlayerTurn].CurrentCellIndex;
+                var swapPlayerCellIndex = players[playerID].CurrentCellIndex;
+                var currentPlayerMoveCount = 0;
+                var swapPlayerMoveCount = 0;
+
+                //Check if we need Move Forward
+                if (currentPlayerCellIndex <= swapPlayerCellIndex)
+                {
+                    currentPlayerMoveCount = swapPlayerCellIndex - currentPlayerCellIndex;
+                    swapPlayerMoveCount = -currentPlayerMoveCount;
+                }
+                else
+                {
+                    currentPlayerMoveCount = swapPlayerCellIndex - currentPlayerCellIndex;
+                    swapPlayerMoveCount = -currentPlayerMoveCount;
+                }
+
+                players[currentPlayerTurn].MoveToCell(currentPlayerMoveCount, -1, false);
+                players[playerID].MoveToCell(swapPlayerMoveCount, -1, false);
             }
             else
             {
-                currentPlayerMoveCount = swapPlayerCellIndex - currentPlayerCellIndex;
-                swapPlayerMoveCount = -currentPlayerMoveCount;
+                Debug.LogError($"Player {playerID + 1} Used Hold Your Ground!");
+                HandleHoldYourGround(playerID, specialCardIndex);
             }
-
-            players[currentPlayerTurn].MoveToCell(currentPlayerMoveCount, -1, false);
-            players[playerID].MoveToCell(swapPlayerMoveCount, -1, false);
 
             FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
 
@@ -469,21 +465,30 @@ namespace Game
 
             deckManager.ResetForcePlayerToSnakeUIs();
 
-            var currentPlayerCellIndex = players[playerID].CurrentCellIndex;
-            var closestSnakeIndex = board.GetClosestSnakeIndex(players[playerID].CurrentCellIndex);
-            var moveCount = 0;
-
-            //Check if we need Move Forward
-            if (currentPlayerCellIndex <= closestSnakeIndex)
+            //Check if We Defence Card Snake Tamer
+            if (!deckManager.HasSnakeTamer(playerID, out var specialCardIndex))
             {
-                moveCount = closestSnakeIndex - currentPlayerCellIndex;
+                var currentPlayerCellIndex = players[playerID].CurrentCellIndex;
+                var closestSnakeIndex = board.GetClosestSnakeIndex(players[playerID].CurrentCellIndex);
+                var moveCount = 0;
+
+                //Check if we need Move Forward
+                if (currentPlayerCellIndex <= closestSnakeIndex)
+                {
+                    moveCount = closestSnakeIndex - currentPlayerCellIndex;
+                }
+                else
+                {
+                    moveCount = -(closestSnakeIndex - currentPlayerCellIndex);
+                }
+
+                players[playerID].MoveToCell(moveCount, -1, false);
             }
             else
             {
-                moveCount = -(closestSnakeIndex - currentPlayerCellIndex);
+                Debug.LogError($"Player {playerID + 1} Used Snake Tamer!");
+                HandleSnakeTamer(playerID, specialCardIndex);
             }
-
-            players[playerID].MoveToCell(moveCount, -1, false);
 
             FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
 

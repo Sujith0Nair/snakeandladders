@@ -272,7 +272,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 322593061669684437}
-        m_TargetAssemblyTypeName: Card, Assembly-CSharp
+        m_TargetAssemblyTypeName: Deck.Card, Assembly-CSharp
         m_MethodName: PlayCard
         m_Mode: 1
         m_Arguments:
