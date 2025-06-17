@@ -232,6 +232,8 @@ namespace Game
 
         private void HandleRetreat(int playerID, int cardIndex, CardSO cardData)
         {
+            deckManager.ResetRetreatCancelUIs();
+            
             isRetreatCardInUse = true;
             totalRetreatMoveCount += cardData.retreatMoveTileCount;
 

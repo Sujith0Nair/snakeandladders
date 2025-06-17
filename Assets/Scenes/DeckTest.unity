@@ -754,10 +754,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2120423792}
     - target: {fileID: 8459101088597608815, guid: 7db3329a5799d445bb89a82c24ac1ac0, type: 3}
-      propertyPath: playerCount
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 8459101088597608815, guid: 7db3329a5799d445bb89a82c24ac1ac0, type: 3}
       propertyPath: raycastCamera
       value: 
       objectReference: {fileID: 1411263375}

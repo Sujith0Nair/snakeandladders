@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   board: {fileID: 0}
   deckManager: {fileID: 0}
-  playerCount: 3
+  playerCount: 4
   playerPrefab: {fileID: 6134495047004191000, guid: d0513a08feac2c547b860be2a64adb06, type: 3}
   spawnPoint: {fileID: 0}
   player1Color: {r: 0.14509805, g: 0.5921569, b: 1, a: 1}
