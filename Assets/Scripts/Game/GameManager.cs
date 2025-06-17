@@ -213,6 +213,10 @@ namespace Game
             {
                 HandleLadderVandalism(cardIndex);
             }
+            else if (cardData.actionCardType.Equals(ActionCardType.ForceToSnake))
+            {
+                HandleForceToSnake(cardIndex);
+            }
             else
             {
                 Debug.LogError($"Invalid Action card type {cardData.cardType}");
@@ -264,6 +268,12 @@ namespace Game
         {
             checkForLadderSelectRaycast = true;
             lastUsedCardIndex = cardIndex;
+        }
+
+        private void HandleForceToSnake(int cardIndex)
+        {
+            lastUsedCardIndex = cardIndex;
+            deckManager.ShowForcePlayerToSnakeUI(currentPlayerTurn);
         }
 
         private void HandleTemporalShift()
@@ -400,6 +410,11 @@ namespace Game
             lastUsedCardIndex = -1;
         }
 
+        private void ResetForcePlayerToSnakeFlags()
+        {
+            lastUsedCardIndex = -1;
+        }
+
         public void CancelRetreat()
         {
             deckManager.ResetRetreatCancelUIs();
@@ -444,6 +459,33 @@ namespace Game
             FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
 
             ResetSwapPositionFlags();
+        }
+
+        public void ForceToSnake(int playerID)
+        {
+            Debug.LogError($"Player {playerID + 1} is Selected for Force To Snake Turn");
+
+            deckManager.ResetForcePlayerToSnakeUIs();
+
+            var currentPlayerCellIndex = players[playerID].CurrentCellIndex;
+            var closestSnakeIndex = board.GetClosestSnakeIndex(players[playerID].CurrentCellIndex);
+            var moveCount = 0;
+
+            //Check if we need Move Forward
+            if (currentPlayerCellIndex <= closestSnakeIndex)
+            {
+                moveCount = closestSnakeIndex - currentPlayerCellIndex;
+            }
+            else
+            {
+                moveCount = -(closestSnakeIndex - currentPlayerCellIndex);
+            }
+
+            players[playerID].MoveToCell(moveCount, -1, false);
+
+            FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
+
+            ResetForcePlayerToSnakeFlags();
         }
     }
 }

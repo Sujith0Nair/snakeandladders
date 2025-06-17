@@ -18,6 +18,7 @@ namespace Deck
         [SerializeField] private List<GameObject> retreatCancelUIs;
         [SerializeField] private List<GameObject> haltUIs;
         [SerializeField] private List<GameObject> swapPlayerUIs;
+        [SerializeField] private List<GameObject> forceToSnakeUIs;
 
         public List<CardSO> allCardTypes;
 
@@ -42,6 +43,7 @@ namespace Deck
             ResetHaltUIs();
             ResetSwapPlayerUIs();
             ResetRetreatCancelUIs();
+            ResetForcePlayerToSnakeUIs();
 
             InitializeDeck();
             ShuffleDeck();
@@ -136,6 +138,14 @@ namespace Deck
             }
         }
 
+        public void ResetForcePlayerToSnakeUIs()
+        {
+            foreach (var forceToSnakeUI in forceToSnakeUIs)
+            {
+                forceToSnakeUI.SetActive(false);
+            }
+        }
+
         private CardSO GetNewCardFromPile()
         {
             return pile.Dequeue();
@@ -214,6 +224,17 @@ namespace Deck
                 if (i != currentPlayerTurn)
                 {
                     swapPlayerUIs[i].SetActive(true);
+                }
+            }
+        }
+
+        public void ShowForcePlayerToSnakeUI(int currentPlayerTurn)
+        {
+            for (int i = 0; i < GameManager.Instance.playerCount; i++)
+            {
+                if (i != currentPlayerTurn)
+                {
+                    forceToSnakeUIs[i].SetActive(true);
                 }
             }
         }

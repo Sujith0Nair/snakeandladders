@@ -65,6 +65,11 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  forceToSnakeUIs:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   allCardTypes:
   - {fileID: 11400000, guid: 1138767010b4b4044be4bd29ba2be43a, type: 2}
   - {fileID: 11400000, guid: 8f9f717659f8f4fff9cd76d808c00a9a, type: 2}
@@ -77,6 +82,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 591648c2e221743f78da7c7758927218, type: 2}
   - {fileID: 11400000, guid: 9ce6db72b0853435892659e423b31f06, type: 2}
   - {fileID: 11400000, guid: 99b98c1b087b442f9af939ec419e97dc, type: 2}
+  - {fileID: 11400000, guid: bdc6e2880647e7d4096d80d08728a7a8, type: 2}
   - {fileID: 11400000, guid: 6169c777625d54b2095e7ceeacd49b2d, type: 2}
   - {fileID: 11400000, guid: 20defc044b3794105b7b14c9bdf3a7a9, type: 2}
   - {fileID: 11400000, guid: ba816eff95a184230b3b6b24d106d8d7, type: 2}

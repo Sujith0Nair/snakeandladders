@@ -237,7 +237,7 @@ namespace Board
             snakeMap = new();
             AppendSnakesOnBoard_Randomly(availableSnakeIndices);
         }
-        
+
         public void BlockAllLadders()
         {
             foreach (var ladder in ladderMap.Values)
@@ -252,6 +252,15 @@ namespace Board
             {
                 ladder.UnblockLadder();
             }
+        }
+
+        public int GetClosestSnakeIndex(int targetIndex)
+        {
+            // Find the key in the dictionary that has the minimum absolute difference from the target
+            int closestKey = snakeMap.Keys.Aggregate((x, y) =>
+                Mathf.Abs(x - targetIndex) < Mathf.Abs(y - targetIndex) ? x : y);
+
+            return closestKey;
         }
     }
 }
