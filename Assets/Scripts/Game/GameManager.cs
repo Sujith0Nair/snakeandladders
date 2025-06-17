@@ -217,6 +217,10 @@ namespace Game
             {
                 HandleForceToSnake(cardIndex);
             }
+            else if (cardData.actionCardType.Equals(ActionCardType.LadderLockout))
+            {
+                HandleLadderLockOut(playerID, cardIndex);
+            }
             else
             {
                 Debug.LogError($"Invalid Action card type {cardData.cardType}");
@@ -228,10 +232,6 @@ namespace Game
             if (cardData.legendaryCardType.Equals(LegendaryCardType.TemporalShift))
             {
                 HandleTemporalShift();
-            }
-            else if (cardData.legendaryCardType.Equals(LegendaryCardType.LadderLockout))
-            {
-                HandleLadderLockOut(playerID, cardIndex);
             }
             else if (cardData.legendaryCardType.Equals(LegendaryCardType.SnakeTamer))
             {

@@ -17,7 +17,7 @@ namespace Deck
         public ActionCardType actionCardType;
         public int retreatMoveTileCount;
 
-        [Header("Legendary Card Data")]
+        [Header("Legendary Card Data")] 
         public LegendaryCardType legendaryCardType;
     }
 
@@ -34,13 +34,13 @@ namespace Deck
         Halt,
         SwapPositions,
         LadderVandalism,
-        ForceToSnake
+        ForceToSnake,
+        LadderLockout
     }
 
     public enum LegendaryCardType
     {
         SnakeTamer,
-        LadderLockout,
         TemporalShift
     }
 }

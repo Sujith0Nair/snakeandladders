@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Ladder Lockout
   cardDeckCount: 1
-  cardType: 2
+  cardType: 1
   moveTileCount: 0
-  actionCardType: 0
+  actionCardType: 5
   retreatMoveTileCount: 0
   legendaryCardType: 1
