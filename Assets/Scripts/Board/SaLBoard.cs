@@ -100,10 +100,13 @@ namespace Board
                 Debug.Log("Snake preset is the same. Early returning!");
                 return;
             }
+            
+            currentSnakePreset =  preset;
+            
             foreach (var coord in currentSnakePreset.Coords)
             {
-                var from = coord.y;
-                var to = coord.x;
+                var from = coord.x;
+                var to = coord.y;
                 var fromCell = cells[from];
                 var toCell = cells[to];
                 var snake = Instantiate(snakePrefab, startPoint.position, Quaternion.identity);
@@ -140,7 +143,7 @@ namespace Board
         {
             snakeRange = default;
             if (!snakeMap.TryGetValue(currentIndex, out var snake)) return false;
-            var cell = cells[snake.To - 1];
+            var cell = cells[snake.From - 1];
             snakeRange = (cell.CellIndex, cell.transform.position);
             return true;
         }

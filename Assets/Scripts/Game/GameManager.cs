@@ -316,12 +316,11 @@ namespace Game
         {
             var randomDiceRoll = Random.Range(1, 7);
             Debug.LogError($"Dice Roll By AI : {randomDiceRoll}");
-
-            //TODO :: UnComment after Fix By Sujith
-            // if (randomDiceRoll == 1 || randomDiceRoll == 6)
-            // {
-            //     board.RandomizeSnake();
-            // }
+            
+            if (randomDiceRoll == 1 || randomDiceRoll == 6)
+            {
+                board.RandomizeSnake();
+            }
 
             //Make Sure Player Moves In Same Index To Trigger Snake Check
             foreach (var player in players)

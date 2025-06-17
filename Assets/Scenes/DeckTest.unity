@@ -414,11 +414,12 @@ MonoBehaviour:
   snakesParent: {fileID: 1744752767}
   startPoint: {fileID: 1005301215}
   cellPrefab: {fileID: 435343485884241473, guid: 12ef0c20d8ed77a42a55c56ac9dcee1c, type: 3}
-  snakeCount: 8
   snakePrefab: {fileID: 3057994146203143081, guid: 88e9a615c5686a4439acc349ca61c8bf, type: 3}
-  ladderCount: 5
   ladderPrefab: {fileID: 922891675066484419, guid: db991d49f361b482fb87a93d0e7b2d3d, type: 3}
   player: {fileID: 0}
+  ladderPreset: {fileID: 11400000, guid: 829192ce3c49f3a4bb297902118494b3, type: 2}
+  snakePresetsHolder: {fileID: 11400000, guid: c369feaca4ee7b7448b384d8f771cfba, type: 2}
+  gameManager: {fileID: 592346188}
 --- !u!4 &1005301215
 Transform:
   m_ObjectHideFlags: 0
@@ -752,6 +753,10 @@ PrefabInstance:
       propertyPath: deckManager
       value: 
       objectReference: {fileID: 2120423792}
+    - target: {fileID: 8459101088597608815, guid: 7db3329a5799d445bb89a82c24ac1ac0, type: 3}
+      propertyPath: playerCount
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 8459101088597608815, guid: 7db3329a5799d445bb89a82c24ac1ac0, type: 3}
       propertyPath: raycastCamera
       value: 
