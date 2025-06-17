@@ -83,15 +83,22 @@ namespace Board
         
         private void AddSnakesOnBoard(bool isFirstTime = false)
         {
+            SnakeCoordPreset preset;
             if (isFirstTime)
             {
                 snakePresetsHolder.Initialize();
-                currentSnakePreset = snakePresetsHolder.GetRandomPreset();
+                preset = snakePresetsHolder.GetRandomPreset();
             }
             else
             {
                 var playerOccupiedCells = gameManager.Players.Where(x => x.CurrentCellIndex > 31).Select(x => x.CurrentCellIndex).ToList();
-                currentSnakePreset = snakePresetsHolder.GetPresetWithinInterestOfCells(currentSnakePreset, playerOccupiedCells);
+                preset = snakePresetsHolder.GetPresetWithinInterestOfCells(currentSnakePreset, playerOccupiedCells);
+            }
+
+            if (preset == currentSnakePreset)
+            {
+                Debug.Log("Snake preset is the same. Early returning!");
+                return;
             }
             foreach (var coord in currentSnakePreset.Coords)
             {
