@@ -318,6 +318,12 @@ namespace Game
             //     board.RandomizeSnake();
             // }
             
+            //Make Sure Player Moves In Same Index To Trigger Snake Check
+            foreach (var player in players)
+            {
+                player.MoveToCell(0, -1, false);
+            }
+            
             //UnBlock All Ladders
             board.UnBlockAllLadders();
 
