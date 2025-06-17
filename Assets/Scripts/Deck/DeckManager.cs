@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Deck
 {
@@ -46,7 +46,6 @@ namespace Deck
             ResetForcePlayerToSnakeUIs();
 
             InitializeDeck();
-            ShuffleDeck();
             DealCardsToPlayers(deckSize);
         }
 
@@ -78,40 +77,63 @@ namespace Deck
             }
         }
 
-        private void ShuffleDeck()
-        {
-            for (int i = 0; i < deck.Count; i++)
-            {
-                int rnd = Random.Range(i, deck.Count);
-                var temp = deck[i];
-                deck[i] = deck[rnd];
-                deck[rnd] = temp;
-            }
-        }
-
         private void DealCardsToPlayers(int cardsPerPlayer)
         {
+            var movementCards = new List<CardSO>();
+            var otherCards = new List<CardSO>();
+
+            foreach (var card in deck)
+            {
+                if (card.cardType == CardType.MovementCards)
+                {
+                    movementCards.Add(card);
+                }
+                else
+                {
+                    otherCards.Add(card);
+                }
+            }
+
+            ShuffleList(movementCards);
+
+            pile = new Queue<CardSO>(movementCards);
+
             for (int i = 0; i < GameManager.Instance.playerCount; i++)
             {
                 playerHands[i] = new List<Card>();
 
                 for (int j = 0; j < cardsPerPlayer; j++)
                 {
-                    if (deck.Count > 0)
+                    if (pile.Count > 0)
                     {
-                        var cardData = deck[0];
-                        deck.RemoveAt(0);
-
-                        //Spawn Card UI to play Deck
+                        var cardData = GetNewCardFromPile();
                         SpawnCardUIToPlayerDeck(cardData, i, j);
+                    }
+                    else
+                    {
+                        Debug.LogError("Not enough movement cards to deal full hands.");
+                        break;
                     }
                 }
             }
 
-            // Remaining goes to pile
-            foreach (var card in deck) pile.Enqueue(card);
+            var remainingPile = pile.ToList(); //get dealt pile
+            remainingPile.AddRange(otherCards); //add other cards
+
+            ShuffleList(remainingPile); //Shuffle the full pile
+
+            pile = new Queue<CardSO>(remainingPile); //recreate pile
 
             deck.Clear();
+        }
+
+        private void ShuffleList<T>(List<T> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                int rnd = Random.Range(i, list.Count);
+                (list[i], list[rnd]) = (list[rnd], list[i]);
+            }
         }
 
         public void ResetHaltUIs()
