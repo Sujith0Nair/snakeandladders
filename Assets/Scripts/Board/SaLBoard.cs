@@ -102,8 +102,8 @@ namespace Board
             }
             foreach (var coord in currentSnakePreset.Coords)
             {
-                var from = coord.x;
-                var to = coord.y;
+                var from = coord.y;
+                var to = coord.x;
                 var fromCell = cells[from];
                 var toCell = cells[to];
                 var snake = Instantiate(snakePrefab, startPoint.position, Quaternion.identity);
