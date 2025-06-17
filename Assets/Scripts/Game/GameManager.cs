@@ -354,6 +354,7 @@ namespace Game
             else
             {
                 canPreformAction = true;
+                deckManager.ShowRetreatCancelUI(currentPlayerTurn);
             }
         }
 
@@ -385,6 +386,13 @@ namespace Game
         private void ResetLadderBlockFlags()
         {
             lastUsedCardIndex = -1;
+        }
+
+        public void CancelRetreat()
+        {
+            deckManager.ResetRetreatCancelUIs();
+            players[currentPlayerTurn].MoveToCell(-totalRetreatMoveCount, -1, true);
+            ResetRetreatCardFlags();
         }
 
         public void BlockPlayer(int playerID)

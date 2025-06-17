@@ -370,6 +370,11 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 7857835292419746358, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
   m_PrefabInstance: {fileID: 8172570334875707661}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &993952263 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7643506807655407343, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
+  m_PrefabInstance: {fileID: 8172570334875707661}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1005301213
 GameObject:
   m_ObjectHideFlags: 0
@@ -571,9 +576,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2841022066473435188, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
   m_PrefabInstance: {fileID: 8172570334875707661}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1486112211 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6528915866345094646, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
+  m_PrefabInstance: {fileID: 8172570334875707661}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1487074822 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4931996741607047687, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
+  m_PrefabInstance: {fileID: 8172570334875707661}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1517777358 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6212005560951919028, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
   m_PrefabInstance: {fileID: 8172570334875707661}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1576382101 stripped
@@ -643,6 +658,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1985225236 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1605164701034125492, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
+  m_PrefabInstance: {fileID: 8172570334875707661}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2117215663 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8277659081186348297, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
@@ -832,6 +852,22 @@ PrefabInstance:
       propertyPath: 'swapPlayerUIs.Array.data[3]'
       value: 
       objectReference: {fileID: 8172570334875707663}
+    - target: {fileID: 4422717871734501932, guid: a47ac03fab9e64764bf8d7f898760e06, type: 3}
+      propertyPath: 'retreatCancelUIs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 993952263}
+    - target: {fileID: 4422717871734501932, guid: a47ac03fab9e64764bf8d7f898760e06, type: 3}
+      propertyPath: 'retreatCancelUIs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1985225236}
+    - target: {fileID: 4422717871734501932, guid: a47ac03fab9e64764bf8d7f898760e06, type: 3}
+      propertyPath: 'retreatCancelUIs.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1517777358}
+    - target: {fileID: 4422717871734501932, guid: a47ac03fab9e64764bf8d7f898760e06, type: 3}
+      propertyPath: 'retreatCancelUIs.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1486112211}
     - target: {fileID: 6997120210525585905, guid: a47ac03fab9e64764bf8d7f898760e06, type: 3}
       propertyPath: m_Name
       value: DeckManager
@@ -858,6 +894,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 592346188}
     - target: {fileID: 2277545336733227108, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 592346188}
+    - target: {fileID: 2364043890991586634, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 592346188}
@@ -945,11 +985,23 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4371322734254082483, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 592346188}
     - target: {fileID: 6359733681696381408, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
       propertyPath: m_Name
       value: GameCanvas
       objectReference: {fileID: 0}
+    - target: {fileID: 7271238531796408385, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 592346188}
     - target: {fileID: 7810575644327605894, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 592346188}
+    - target: {fileID: 7925829730384184881, guid: 5c9ddf82c5c3c4a0d9c12abab9b0217e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 592346188}

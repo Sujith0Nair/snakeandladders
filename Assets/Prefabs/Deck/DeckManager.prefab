@@ -50,6 +50,11 @@ MonoBehaviour:
   player2CardAttachPoint: {fileID: 0}
   player3CardAttachPoint: {fileID: 0}
   player4CardAttachPoint: {fileID: 0}
+  retreatCancelUIs:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   haltUIs:
   - {fileID: 0}
   - {fileID: 0}

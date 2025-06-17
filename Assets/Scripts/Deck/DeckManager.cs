@@ -15,6 +15,7 @@ namespace Deck
         [SerializeField] private GameObject player3CardAttachPoint;
         [SerializeField] private GameObject player4CardAttachPoint;
 
+        [SerializeField] private List<GameObject> retreatCancelUIs;
         [SerializeField] private List<GameObject> haltUIs;
         [SerializeField] private List<GameObject> swapPlayerUIs;
 
@@ -40,6 +41,7 @@ namespace Deck
 
             ResetHaltUIs();
             ResetSwapPlayerUIs();
+            ResetRetreatCancelUIs();
 
             InitializeDeck();
             ShuffleDeck();
@@ -126,6 +128,14 @@ namespace Deck
             }
         }
 
+        public void ResetRetreatCancelUIs()
+        {
+            foreach (var retreatCancelUI in retreatCancelUIs)
+            {
+                retreatCancelUI.SetActive(false);
+            }
+        }
+
         private CardSO GetNewCardFromPile()
         {
             return pile.Dequeue();
@@ -173,6 +183,17 @@ namespace Deck
             return playerHands[playerID]
                 .Find(x => x.cardData.cardType.Equals(CardType.ActionCards) &&
                            x.cardData.actionCardType.Equals(ActionCardType.Retreat));
+        }
+
+        public void ShowRetreatCancelUI(int currentPlayerTurn)
+        {
+            for (int i = 0; i < GameManager.Instance.playerCount; i++)
+            {
+                if (i == currentPlayerTurn)
+                {
+                    retreatCancelUIs[i].SetActive(true);
+                }
+            }
         }
 
         public void ShowHaltUI(int currentPlayerTurn)
