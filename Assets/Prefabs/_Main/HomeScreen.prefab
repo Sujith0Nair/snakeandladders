@@ -255,6 +255,7 @@ GameObject:
   - component: {fileID: 7577093166030408835}
   - component: {fileID: 7023022482414480758}
   - component: {fileID: 3018233990492689977}
+  - component: {fileID: 994674641557981002}
   m_Layer: 5
   m_Name: HomeScreen
   m_TagString: Untagged
@@ -300,7 +301,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 1
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -359,6 +360,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startGameButton: {fileID: 3933186478001086090}
   quitGameButton: {fileID: 9036675290955007415}
+  canvasGroup: {fileID: 994674641557981002}
+--- !u!225 &994674641557981002
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 557939446802406346}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7151595426123423018
 GameObject:
   m_ObjectHideFlags: 0

@@ -33,7 +33,7 @@ namespace _Main.Contexts
             startButton.AddButtonClickEvent(StartGame);
             SetupCharacterButtons();
             SetupDataBasedOnPreviousInfo();
-            maxPlayersSlider.onValueChanged.AddListener((value) => World.Get.Board.PlayerCountInMatch = (int)value);
+            maxPlayersSlider.onValueChanged.AddListener((value) => DataBoard.PlayerCountInMatch = (int)value);
         }
 
         private void GoBackToHome()
@@ -52,11 +52,12 @@ namespace _Main.Contexts
             LoadingScreen.ShowLoadingScreen(() => !sceneOp.isDone, () => sceneOp.progress, SetSceneActive, customSceneLoadDelay);
         }
 
-        private static void SetSceneActive()
+        private void SetSceneActive()
         {
             var sceneCount = SceneManager.sceneCount;
             var targetScene = SceneManager.GetSceneAt(sceneCount - 1);
             SceneManager.SetActiveScene(targetScene);
+            GoBackToHome();
         }
 
         private void SetupCharacterButtons()
@@ -70,7 +71,7 @@ namespace _Main.Contexts
 
                 void SelectCharacter()
                 {
-                    World.Get.Board.PlayerCharacterIndex = localCopy;
+                    DataBoard.PlayerCharacterIndex = localCopy;
                     SetTick(localCopy);
                 }
             }
@@ -78,8 +79,8 @@ namespace _Main.Contexts
 
         private void SetupDataBasedOnPreviousInfo()
         {
-            maxPlayersSlider.value = World.Get.Board.PlayerCountInMatch;
-            var characterIndex = World.Get.Board.PlayerCharacterIndex;
+            maxPlayersSlider.value = DataBoard.PlayerCountInMatch;
+            var characterIndex = DataBoard.PlayerCharacterIndex;
             playerCharacterChoices[characterIndex].onClick.Invoke();
         }
 

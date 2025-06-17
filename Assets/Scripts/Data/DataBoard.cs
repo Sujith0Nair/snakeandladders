@@ -11,7 +11,7 @@ namespace Data
             { "CharIndex", "PlayerCharacterIndex" }
         };
         
-        public int PlayerCountInMatch
+        public static int PlayerCountInMatch
         {
             get => GetPlayerCountInMatch(); 
             set => SetPlayerCountInMatch(value);
@@ -27,7 +27,7 @@ namespace Data
             PlayerPrefs.SetInt(KeyToPrefName["PlayerCount"], playerCountInMatch);
         }
 
-        public int PlayerCharacterIndex
+        public static int PlayerCharacterIndex
         {
             get => GetPlayerCharacterIndex(); 
             set => SetPlayerCharacterIndex(value);
