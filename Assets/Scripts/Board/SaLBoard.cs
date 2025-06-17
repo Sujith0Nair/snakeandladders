@@ -1,6 +1,8 @@
+using Game;
 using Player;
 using System.Linq;
 using UnityEngine;
+using _Main.ScriptableObjects;
 using System.Collections.Generic;
 
 namespace Board
@@ -12,26 +14,25 @@ namespace Board
         [SerializeField] private Transform snakesParent;
         [SerializeField] private Transform startPoint;
         [SerializeField] private GameObject cellPrefab;
-        [SerializeField, Range(1, 10)] private int snakeCount;
         [SerializeField] private GameObject snakePrefab;
-        [SerializeField, Range(1, 10)] private int ladderCount;
         [SerializeField] private GameObject ladderPrefab;
         [SerializeField] private DummyPlayer player;
+        [SerializeField] private LadderCoordPreset ladderPreset;
+        [SerializeField] private SnakePresetsHolder snakePresetsHolder;
+        [SerializeField] private GameManager gameManager;
+
+        private SnakeCoordPreset currentSnakePreset;
 
         private List<BoardCell> cells = new();
         private Dictionary<int, Ladder> ladderMap = new();
         private Dictionary<int, Snake> snakeMap = new();
 
-        private List<int> availableSnakeIndices = new();
-
         private void Start()
         {
             GenerateBoard();
-            AppendLaddersOnBoard_Randomly(out var leftOverIndices);
-
-            availableSnakeIndices = leftOverIndices;
-
-            AppendSnakesOnBoard_Randomly(leftOverIndices);
+            AddLaddersOnBoard();
+            snakePresetsHolder.Initialize();
+            AddSnakesOnBoard(true);
         }
 
         private void GenerateBoard()
@@ -56,29 +57,17 @@ namespace Board
             }
         }
 
-        private void AppendLaddersOnBoard_Randomly(out List<int> leftOverIndices)
+        private void AddLaddersOnBoard()
         {
-            var ladderPoints = new List<(int from, int to)>();
-            var indicesList = Enumerable.Range(0, 100).ToList();
-            leftOverIndices = indicesList;
-            for (var i = 0; i < ladderCount; i++)
+            var coords = ladderPreset.Coords;
+            foreach (var coord in coords)
             {
-                var fromIndex = Random.Range(0, indicesList.Count - 20);
-                var from = indicesList[fromIndex];
-                var closestFactor = from - from % 10;
-                var toIndex = Random.Range(closestFactor + 10, indicesList.Count - 2);
-                var to = indicesList[toIndex];
-                ladderPoints.Add((from, to));
-                indicesList.RemoveAt(fromIndex);
-                indicesList.RemoveAt(toIndex);
-            }
-
-            foreach (var (from, to) in ladderPoints)
-            {
-                var ladder = Instantiate(ladderPrefab, startPoint.position, Quaternion.identity);
-                ladder.transform.SetParent(laddersParent);
+                var from = coord.x;
+                var to = coord.y;
                 var fromCell = cells[from];
                 var toCell = cells[to];
+                var ladder = Instantiate(ladderPrefab, startPoint.position, Quaternion.identity);
+                ladder.transform.SetParent(laddersParent);
                 ladder.name = $"Ladder_{fromCell.CellIndex}_{toCell.CellIndex}";
                 var direction = toCell.transform.position - fromCell.transform.position;
                 ladder.transform.forward = direction;
@@ -91,37 +80,37 @@ namespace Board
                 Debug.Log($"Ladder from {from} to {to}. Ladder: {ladder}", ladder);
             }
         }
-
-        private void AppendSnakesOnBoard_Randomly(List<int> indicesList)
+        
+        private void AddSnakesOnBoard(bool isFirstTime = false)
         {
-            var snakePoints = new List<(int from, int to)>();
-            for (var i = 0; i < snakeCount; i++)
+            if (isFirstTime)
             {
-                var fromIndex = Random.Range(0, indicesList.Count - 20);
-                var from = indicesList[fromIndex];
-                var closestFactor = from - from % 10;
-                var toIndex = Random.Range(closestFactor + 10, indicesList.Count - 2);
-                var to = indicesList[toIndex];
-                snakePoints.Add((from, to));
-                indicesList.RemoveAt(fromIndex);
-                indicesList.RemoveAt(toIndex);
+                snakePresetsHolder.Initialize();
+                currentSnakePreset = snakePresetsHolder.GetRandomPreset();
             }
-
-            foreach (var (from, to) in snakePoints)
+            else
             {
-                var snake = Instantiate(snakePrefab, startPoint.position, Quaternion.identity);
-                snake.transform.SetParent(snakesParent);
+                var playerOccupiedCells = gameManager.Players.Where(x => x.CurrentCellIndex > 31).Select(x => x.CurrentCellIndex).ToList();
+                currentSnakePreset = snakePresetsHolder.GetPresetWithinInterestOfCells(currentSnakePreset, playerOccupiedCells);
+            }
+            foreach (var coord in currentSnakePreset.Coords)
+            {
+                var from = coord.x;
+                var to = coord.y;
                 var fromCell = cells[from];
                 var toCell = cells[to];
+                var snake = Instantiate(snakePrefab, startPoint.position, Quaternion.identity);
+                snake.transform.SetParent(snakesParent);
                 snake.name = $"Snake_{fromCell.CellIndex}_{toCell.CellIndex}";
                 var direction = toCell.transform.position - fromCell.transform.position;
                 snake.transform.forward = direction;
                 snake.transform.position = (fromCell.transform.position + toCell.transform.position) / 2;
-                snake.transform.localScale = new Vector3(1, snake.transform.localScale.y, direction.magnitude);
+                snake.transform.localScale = new Vector3(snake.transform.localScale.x, snake.transform.localScale.y,
+                    direction.magnitude);
                 var snakeComponent = snake.GetComponent<Snake>();
                 snakeComponent.Init(fromCell.CellIndex, toCell.CellIndex);
-                snakeMap.Add(toCell.CellIndex, snakeComponent);
-                Debug.Log($"Snake from {from} to {to}. Ladder: {snake}", snake);
+                snakeMap.Add(fromCell.CellIndex, snakeComponent);
+                Debug.Log($"Snake from {from} to {to}. Snake: {snake}", snake);
             }
         }
 
@@ -234,8 +223,8 @@ namespace Board
         public void RandomizeSnake()
         {
             ClearSnakes();
-            snakeMap = new();
-            AppendSnakesOnBoard_Randomly(availableSnakeIndices);
+            snakeMap = new Dictionary<int, Snake>();
+            AddSnakesOnBoard();
         }
 
         public void BlockAllLadders()

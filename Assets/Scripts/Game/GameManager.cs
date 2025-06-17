@@ -34,6 +34,8 @@ namespace Game
         public Action<int, int> OnPlayerUsedCard;
 
         private List<PlayerController> players;
+        
+        public IReadOnlyList<PlayerController> Players => players;
 
         private bool canPreformAction;
 
