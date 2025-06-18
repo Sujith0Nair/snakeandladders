@@ -1,5 +1,6 @@
 ﻿using Data;
 using UnityEngine;
+using Unity.Services.Multiplayer;
 
 namespace _Main
 {
@@ -7,6 +8,7 @@ namespace _Main
     {
         public static World Get;
         public DataBoard Board { get; private set; }
+        public ISession ActiveSession { get; set; }
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         public static void Initialize()

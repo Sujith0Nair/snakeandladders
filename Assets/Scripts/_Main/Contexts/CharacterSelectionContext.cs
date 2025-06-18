@@ -1,21 +1,16 @@
-﻿using Common;
-using System;
-using Data;
+﻿using System;
 using Helpers;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 namespace _Main.Contexts
 {
     public class CharacterSelectionContext : Context
     {
-        [SerializeField] private string gameSceneName;
         [SerializeField] private Slider maxPlayersSlider;
         [SerializeField] private Button[] playerCharacterChoices;
         [SerializeField] private Image[] tickImages;
         [SerializeField] private Button backButton;
-        [SerializeField] private Button startButton;
         [SerializeField] private float customSceneLoadDelay;
         
         private Action goToPreviousPage;
@@ -30,34 +25,14 @@ namespace _Main.Contexts
         private void Start()
         {
             backButton.AddButtonClickEvent(GoBackToHome);
-            startButton.AddButtonClickEvent(StartGame);
             SetupCharacterButtons();
             SetupDataBasedOnPreviousInfo();
             maxPlayersSlider.onValueChanged.AddListener((value) => World.Get.Board.PlayerCountInMatch = (int)value);
         }
 
-        private void GoBackToHome()
+        public void GoBackToHome()
         {
             goToPreviousPage();
-        }
-
-        private void StartGame()
-        {
-            var sceneOp = SceneManager.LoadSceneAsync(gameSceneName, LoadSceneMode.Additive);
-            if (sceneOp == null)
-            {
-                Debug.LogError("Failed to load game scene");
-                return;
-            }
-            LoadingScreen.ShowLoadingScreen(() => !sceneOp.isDone, () => sceneOp.progress, SetSceneActive, customSceneLoadDelay);
-        }
-
-        private void SetSceneActive()
-        {
-            var sceneCount = SceneManager.sceneCount;
-            var targetScene = SceneManager.GetSceneAt(sceneCount - 1);
-            SceneManager.SetActiveScene(targetScene);
-            GoBackToHome();
         }
 
         private void SetupCharacterButtons()
