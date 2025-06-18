@@ -1636,7 +1636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 103cfaa95e31462ba65831ab7c700e5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSceneName: GameScene
+  gameSceneName: DeckTest
   maxPlayersSlider: {fileID: 998739064578589256}
   playerCharacterChoices:
   - {fileID: 4697597562839124403}

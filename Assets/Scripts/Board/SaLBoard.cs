@@ -94,12 +94,6 @@ namespace Board
                 var playerOccupiedCells = gameManager.Players.Where(x => x.CurrentCellIndex > 31).Select(x => x.CurrentCellIndex).ToList();
                 preset = snakePresetsHolder.GetPresetWithinInterestOfCells(currentSnakePreset, playerOccupiedCells);
             }
-
-            if (preset == currentSnakePreset)
-            {
-                Debug.Log("Snake preset is the same. Early returning!");
-                return;
-            }
             
             currentSnakePreset =  preset;
             

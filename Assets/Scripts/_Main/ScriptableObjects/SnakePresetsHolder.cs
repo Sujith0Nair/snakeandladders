@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Linq;
 using System.Collections.Generic;
 using Random = UnityEngine.Random;
 
@@ -40,8 +41,8 @@ namespace _Main.ScriptableObjects
 
         public SnakeCoordPreset GetPresetWithinInterestOfCells(SnakeCoordPreset currentPreset, IReadOnlyList<int> cells)
         {
-            var index = Array.IndexOf(presets, currentPreset);
-            if (index == -1)
+            var currentPresetIndex = Array.IndexOf(presets, currentPreset);
+            if (currentPresetIndex == -1)
             {
                 return null;
             }
@@ -57,7 +58,7 @@ namespace _Main.ScriptableObjects
                 };
                 var isFound = uniqueOccupiedCells.TryGetValue(hash, out var cachedHash);
                 if (!isFound) continue;
-                foreach (var availablePresetIndex in cachedHash.AvailablePresets)
+                foreach (var availablePresetIndex in cachedHash.AvailablePresets.Where(availablePresetIndex => availablePresetIndex != currentPresetIndex))
                 {
                     presetWeights[availablePresetIndex]++;
                 }

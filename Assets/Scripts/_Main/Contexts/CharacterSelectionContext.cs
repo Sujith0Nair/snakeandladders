@@ -33,7 +33,7 @@ namespace _Main.Contexts
             startButton.AddButtonClickEvent(StartGame);
             SetupCharacterButtons();
             SetupDataBasedOnPreviousInfo();
-            maxPlayersSlider.onValueChanged.AddListener((value) => DataBoard.PlayerCountInMatch = (int)value);
+            maxPlayersSlider.onValueChanged.AddListener((value) => World.Get.Board.PlayerCountInMatch = (int)value);
         }
 
         private void GoBackToHome()
@@ -71,7 +71,7 @@ namespace _Main.Contexts
 
                 void SelectCharacter()
                 {
-                    DataBoard.PlayerCharacterIndex = localCopy;
+                    World.Get.Board.PlayerCharacterIndex = localCopy;
                     SetTick(localCopy);
                 }
             }
@@ -79,8 +79,8 @@ namespace _Main.Contexts
 
         private void SetupDataBasedOnPreviousInfo()
         {
-            maxPlayersSlider.value = DataBoard.PlayerCountInMatch;
-            var characterIndex = DataBoard.PlayerCharacterIndex;
+            maxPlayersSlider.value = World.Get.Board.PlayerCountInMatch;
+            var characterIndex = World.Get.Board.PlayerCharacterIndex;
             playerCharacterChoices[characterIndex].onClick.Invoke();
         }
 

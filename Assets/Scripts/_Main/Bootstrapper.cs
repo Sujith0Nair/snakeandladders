@@ -15,21 +15,33 @@ namespace _Main
         {
             currentContext = contextHolder.GetDefaultContext();
             currentContext.Enter(MoveBack, MoveForward);
-            SceneManager.activeSceneChanged += OnActiveSceneChanged;
+            SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
         }
 
         private void OnDisable()
         {
-            SceneManager.activeSceneChanged -= OnActiveSceneChanged;
             contextHolder.Dispose();
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneUnloaded -= OnSceneUnloaded;
         }
 
-        private void OnActiveSceneChanged(Scene current, Scene next)
+        private void OnSceneUnloaded(Scene _)
         {
-            var status = next == gameObject.scene;
+            SetSceneObjectsState(true);
+        }
+
+        private void OnSceneLoaded(Scene _, LoadSceneMode __)
+        {
+            SetSceneObjectsState(false);
+        }
+
+        private void SetSceneObjectsState(bool state)
+        {
+            state &= SceneManager.sceneCount == 0;
             foreach (var obj in objectsToHideOnSceneSwitch)
             {
-                obj.SetActive(status);
+                obj.SetActive(state);
             }
         }
 

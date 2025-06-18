@@ -1,9 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using _Main;
 using Board;
 using Deck;
 using Player;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 namespace Game
@@ -66,13 +69,19 @@ namespace Game
             Instance = null;
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
+            playerCount = World.Get.Board.PlayerCountInMatch;
+            
             canPreformAction = true;
 
             currentPlayerTurn = 0;
 
             players = new List<PlayerController>();
+            
+            var currentScene = gameObject.scene;
+            
+            yield return new WaitUntil(() => SceneManager.GetActiveScene() == currentScene);
 
             SpawnPlayer();
         }

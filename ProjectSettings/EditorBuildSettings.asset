@@ -9,8 +9,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Bootstrap.unity
     guid: 37cf8203bc87c1c4294cf2ec6439ba5a
   - enabled: 1
-    path: Assets/Scenes/GameScene.unity
-    guid: dc851eea96d12f5458a187f40167a1ef
+    path: Assets/Scenes/DeckTest.unity
+    guid: 53447ba67e563420bb497b41dc8f4eeb
   - enabled: 1
     path: Assets/Scenes/NetworkPlayground.unity
     guid: c81a00c4168a77c449182cc6ff1adf4f
