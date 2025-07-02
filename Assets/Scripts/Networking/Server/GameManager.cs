@@ -1,8 +1,9 @@
-﻿using System.Linq;
-using Board;
+﻿using Board;
 using UnityEngine;
+using System.Linq;
 using Unity.Netcode;
 using _Main.ScriptableObjects;
+using Random = UnityEngine.Random;
 
 namespace Networking.Server
 {
@@ -11,8 +12,13 @@ namespace Networking.Server
         [SerializeField] private SnakePresetsHolder snakePresetsHolder;
         
         public static GameManager Instance { get; private set; }
+        public int LocalId { get; private set; }
 
-        
+        private void Awake()
+        {
+            Instance = this;
+        }
+
         public override void OnNetworkSpawn()
         {
             // Select the snake preset and pass it to all the players
@@ -38,28 +44,65 @@ namespace Networking.Server
         [Rpc(SendTo.Everyone)]
         private void SpawnPlayersLocally_Rpc(ulong clientId)
         {
-            Game.GameManager.Instance.SpawnPlayer((int)clientId);
+            LocalId = (int)clientId;
+            Game.GameManager.Instance.SpawnPlayer(LocalId);
         }
-        
-        public void RandomiseSnakePositions()
+
+        public void OnRoundCompleted()
         {
             if (!IsSessionOwner)
             {
-                Debug.Log($"Not doing any randomise snake positions since it is not a session owner!");
+                Debug.Log($"Since not session owner returning!");
                 return;
             }
             
+            var randomValue = Random.Range(1, 7);
+            Debug.LogError($"Random Value : {randomValue}");
+
+            if (randomValue is not 1 or 6)
+            {
+                Debug.Log($"Safe, no randomisation since the value is: {randomValue}");
+                return;
+            }
+
+            RandomiseSnakePositions();
+            TryMovingTheLocalPlayer_Rpc();
+            ToggleLadderStatus_Rpc(true);
+        }
+        
+        private void RandomiseSnakePositions()
+        {   
             var playerOccupiedCells = Game.GameManager.Instance.Players.Where(x => x.CurrentCellIndex > 31).Select(x => x.CurrentCellIndex).ToList();
             var preset = snakePresetsHolder.GetPresetWithinInterestOfCells(SaLBoard.Instance.CurrentSnakePreset, playerOccupiedCells);
             var presetIndex = snakePresetsHolder.GetIndexOfPreset(preset);
-            ClearAndSpawnBackSnakes(presetIndex);
+            ClearAndSpawnBackSnakes_Rpc(presetIndex);
         }
 
         [Rpc(SendTo.Everyone)]
-        private void ClearAndSpawnBackSnakes(int presetIndex)
+        private void ClearAndSpawnBackSnakes_Rpc(int presetIndex)
         {
             SaLBoard.Instance.ClearSnakes();
             SaLBoard.Instance.SpawnSnakesBasedOnPreset(presetIndex);
+        }
+
+        [Rpc(SendTo.Everyone)]
+        private void TryMovingTheLocalPlayer_Rpc()
+        {
+            Game.GameManager.Instance.TryMovingPlayerToCheckForSnake();
+            Game.GameManager.Instance.TurnCompleteCheck();
+        }
+        
+        [Rpc(SendTo.Everyone)]
+        private void ToggleLadderStatus_Rpc(bool status)
+        {
+            if (status)
+            {
+                SaLBoard.Instance.UnBlockAllLadders();
+            }
+            else
+            {
+                SaLBoard.Instance.BlockAllLadders();
+            }
         }
     }
 }

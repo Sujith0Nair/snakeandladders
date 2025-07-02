@@ -323,7 +323,7 @@ namespace Game
             if (currentPlayerTurn >= playerCount)
             {
                 currentPlayerTurn = 0;
-                RoundCompleted();
+                Networking.Server.GameManager.Instance.OnRoundCompleted();
             }
             else
             {
@@ -331,31 +331,35 @@ namespace Game
             }
         }
 
-        private void RoundCompleted()
+        // private void RoundCompleted()
+        // {   
+        //     var randomDiceRoll = Random.Range(1, 7);
+        //     Debug.LogError($"Dice Roll By AI : {randomDiceRoll}");
+        //     
+        //     if (randomDiceRoll is 1 or 6)
+        //     {
+        //         Networking.Server.GameManager.Instance.RandomiseSnakePositions();
+        //     }
+        //
+        //     //Make Sure Player Moves In Same Index To Trigger Snake Check
+        //     foreach (var player in players)
+        //     {
+        //         player.MoveToCell(0, -1, false);
+        //     }
+        //
+        //     //UnBlock All Ladders
+        //     board.UnBlockAllLadders();
+        //
+        //     TurnCompleteCheck();
+        // }
+
+        public void TryMovingPlayerToCheckForSnake()
         {
-            // TODO: Need to move the whole thing to server side
-            
-            var randomDiceRoll = Random.Range(1, 7);
-            Debug.LogError($"Dice Roll By AI : {randomDiceRoll}");
-            
-            if (randomDiceRoll is 1 or 6)
-            {
-                Networking.Server.GameManager.Instance.RandomiseSnakePositions();
-            }
-
-            //Make Sure Player Moves In Same Index To Trigger Snake Check
-            foreach (var player in players)
-            {
-                player.MoveToCell(0, -1, false);
-            }
-
-            //UnBlock All Ladders
-            board.UnBlockAllLadders();
-
-            TurnCompleteCheck();
+            var player = players[Networking.Server.GameManager.Instance.LocalId];
+            player.MoveToCell(0, -1, false);
         }
 
-        private void TurnCompleteCheck()
+        public void TurnCompleteCheck()
         {
             OnPlayerTurnFinished?.Invoke(currentPlayerTurn);
 
