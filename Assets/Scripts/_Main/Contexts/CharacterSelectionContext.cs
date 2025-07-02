@@ -11,7 +11,6 @@ namespace _Main.Contexts
         [SerializeField] private Button[] playerCharacterChoices;
         [SerializeField] private Image[] tickImages;
         [SerializeField] private Button backButton;
-        [SerializeField] private float customSceneLoadDelay;
         
         private Action goToPreviousPage;
         

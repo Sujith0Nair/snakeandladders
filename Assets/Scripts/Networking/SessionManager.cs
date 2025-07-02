@@ -109,6 +109,11 @@ namespace Networking
         {   
             var neededPlayerCount = World.Get.Board.PlayerCountInMatch;
 
+            NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
+            NetworkManager.Singleton.SceneManager.VerifySceneBeforeUnloading += VerifySceneBeforeUnloading;
+            
+            Debug.LogError($"Waiting for players to come in: {neededPlayerCount}");
+
             while (ActiveSession.PlayerCount < neededPlayerCount)
             {
                 messageLabel.text = $"Waiting for players. Joined {ActiveSession.PlayerCount} out of {neededPlayerCount}. Join code: {enteredRoomId}";
@@ -116,19 +121,24 @@ namespace Networking
             }
             
             messageLabel.text = $"All players joined. Starting the game. Session id: {ActiveSession.Id}. Join code: {enteredRoomId}";
-
-            NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
             LoadingScreen.ShowLoadingScreen(() => isSceneLoaded, () => sceneLoadProgress, null);
             if (!ActiveSession.IsHost) yield break;
             
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(5f);
             NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, LoadSceneMode.Additive);
+        }
+
+        private static bool VerifySceneBeforeUnloading(Scene scene)
+        {
+            var result = scene.name != "Bootstrap";
+            Debug.LogError($"Verifying scene before unloading: {result} for scene name: {scene.name}");
+            return result; 
         }
 
         private void OnSceneEvent(SceneEvent sceneEvent)
         {
             sceneLoadProgress = sceneEvent.AsyncOperation?.progress ?? 50f;
-            if (sceneEvent.SceneEventType != SceneEventType.LoadComplete) return;
+            if (sceneEvent.SceneEventType != SceneEventType.LoadEventCompleted) return;
             NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnSceneEvent;
             isSceneLoaded = true;
             var sceneCount = SceneManager.sceneCount;
@@ -175,6 +185,13 @@ namespace Networking
                 obj.SetActive(isActive);
             }
             overlayPanel.SetActive(!isActive);
+        }
+
+        private void OnDestroy()
+        {
+            if (NetworkManager.Singleton == null) return;
+            if (NetworkManager.Singleton.SceneManager == null) return;
+            NetworkManager.Singleton.SceneManager.VerifySceneBeforeUnloading -= VerifySceneBeforeUnloading;
         }
     }
 }
