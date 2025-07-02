@@ -7,6 +7,7 @@ using Unity.Netcode;
 using UnityEngine.UI;
 using _Main.Contexts;
 using System.Collections;
+using System.Threading.Tasks;
 using Unity.Services.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine.SceneManagement;
@@ -66,9 +67,13 @@ namespace Networking
                 }
                 
                 ToggleObjects(false);
+
+                while (true)
+                {
+                    if (World.Get.IsSignedIn) break;
+                    await Task.Yield();
+                }
                 
-                await UnityServices.InitializeAsync();
-                await AuthenticationService.Instance.SignInAnonymouslyAsync();
                 var message = $"Signed in anonymously. Player id: {AuthenticationService.Instance.PlayerId}";
                 messageLabel.text = message;
                 Debug.Log(message);
@@ -92,8 +97,11 @@ namespace Networking
                     IsPrivate = true
                 }
                 .WithDistributedAuthorityNetwork();
+                var message = $"Creating a room for you... Please wait.";
+                messageLabel.text = message;
+                Debug.Log(message);
                 ActiveSession = await MultiplayerService.Instance.CreateOrJoinSessionAsync(enteredRoomId, options);
-                var message = $"Session created or joined. Session id: {ActiveSession.Id}. Join code: {enteredRoomId}";
+                message = $"Session created or joined. Session id: {ActiveSession.Id}. Join code: {enteredRoomId}";
                 messageLabel.text = message;
                 Debug.Log(message);
 
