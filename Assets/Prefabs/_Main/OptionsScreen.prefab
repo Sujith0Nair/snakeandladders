@@ -2546,7 +2546,6 @@ MonoBehaviour:
   - {fileID: 1907836463498403728}
   - {fileID: 6807212728812123955}
   backButton: {fileID: 7251914300720123201}
-  customSceneLoadDelay: 1
 --- !u!114 &5488202611891823493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2571,6 +2570,7 @@ MonoBehaviour:
   overlayPanel: {fileID: 8942268111910047221}
   gameSceneName: DeckTest
   context: {fileID: 8834161744303449995}
+  netMangerPrefab: {fileID: 1136288814229443475, guid: 2138ce4f9f73f4d42b9b0835e489c900, type: 3}
 --- !u!1 &6128140938458157977
 GameObject:
   m_ObjectHideFlags: 0

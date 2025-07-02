@@ -25,6 +25,7 @@ namespace Networking
         [SerializeField] private GameObject overlayPanel;
         [SerializeField] private string gameSceneName;
         [SerializeField] private CharacterSelectionContext context;
+        [SerializeField] private GameObject netMangerPrefab;
 
         private string enteredRoomId;
         private float sceneLoadProgress;
@@ -125,6 +126,9 @@ namespace Networking
             if (!ActiveSession.IsHost) yield break;
             
             yield return new WaitForSeconds(5f);
+            
+            Instantiate(netMangerPrefab).GetComponent<NetworkObject>().Spawn();
+            
             NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, LoadSceneMode.Additive);
         }
 
@@ -141,10 +145,24 @@ namespace Networking
             if (sceneEvent.SceneEventType != SceneEventType.LoadEventCompleted) return;
             NetworkManager.Singleton.SceneManager.OnSceneEvent -= OnSceneEvent;
             isSceneLoaded = true;
-            var sceneCount = SceneManager.sceneCount;
-            var targetScene = SceneManager.GetSceneAt(sceneCount - 1);
-            SceneManager.SetActiveScene(targetScene);
+            StartCoroutine(WaitAndSetSceneActive());
             context.GoBackToHome();
+        }
+
+        private static IEnumerator WaitAndSetSceneActive()
+        {
+            while (true)
+            {
+                var sceneCount = SceneManager.sceneCount;
+                var targetScene = SceneManager.GetSceneAt(sceneCount - 1);
+                if (!targetScene.IsValid() || !targetScene.isLoaded)
+                {
+                    yield return null;
+                    continue;
+                }
+                SceneManager.SetActiveScene(targetScene);
+                break;
+            }
         }
 
         private async void KickPlayer(string playerId)
