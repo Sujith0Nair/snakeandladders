@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using _Main;
 using Board;
 using Deck;
+using GameUI;
 using Player;
 using Unity.Netcode;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Game
 {
@@ -50,6 +50,7 @@ namespace Game
         private bool checkForLadderSelectRaycast;
 
         private int lastUsedCardIndex;
+        
 
         private void Awake()
         {
@@ -68,26 +69,22 @@ namespace Game
             Instance = null;
         }
 
-        private void Start()
+        public void Init()
         {
             playerCount = World.Get.Board.PlayerCountInMatch;
             
             canPreformAction = true;
 
             currentPlayerTurn = 0;
-
+            
             players = new List<PlayerController>(playerCount);
 
-            for (var i = 0; i < playerCount; i++)
-            {
-                players.Add(null);
-            }
-            
-            // var currentScene = gameObject.scene;
-            //
-            // yield return new WaitUntil(() => SceneManager.GetActiveScene() == currentScene);
-            //
-            // SpawnPlayer();
+            Networking.Server.GameManager.Instance.RegisterAsLocalPlayer_RPC(Networking.Server.GameManager.Instance.LocalClientId);
+
+            SpawnPlayer();
+
+            DeckManager.Instance.Init();
+            GameUIController.Instance.Init();
         }
 
         private void Update()
@@ -101,22 +98,15 @@ namespace Game
             }
         }
 
-        // private void SpawnPlayer()
-        // {
-        //     for (int i = 0; i < playerCount; i++)
-        //     {
-        //         var spawnedPlayer = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
-        //         var playerController = spawnedPlayer.GetComponent<PlayerController>();
-        //         playerController.Init(board, i, GetPlayerColor(i));
-        //         players.Add(playerController);
-        //     }
-        // }
-
-        public void SpawnPlayer(int playerId)
+        private void SpawnPlayer()
         {
-            var spawnedPlayer = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
-            var networkObject = spawnedPlayer.GetComponent<NetworkObject>();
-            networkObject.Spawn(true);
+            for (int i = 0; i < playerCount; i++)
+            {
+                var spawnedPlayer = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
+                var playerController = spawnedPlayer.GetComponent<PlayerController>();
+                playerController.Init(i, GetPlayerColor(i));
+                players.Add(playerController);
+            }
         }
 
         public void AppendPlayerController(PlayerController playerController, int index)
@@ -355,8 +345,9 @@ namespace Game
 
         public void TryMovingPlayerToCheckForSnake()
         {
-            var player = players[Networking.Server.GameManager.Instance.LocalId];
-            player.MoveToCell(0, -1, false);
+            return;
+            /*var player = players[Networking.Server.GameManager.Instance.LocalId];
+            player.MoveToCell(0, -1, false);*/
         }
 
         public void TurnCompleteCheck()

@@ -1,19 +1,19 @@
 using Game;
 using Board;
-using _Main;
 using UnityEngine;
-using Unity.Netcode;
 using System.Collections;
 
 namespace Player
 {
-    public class PlayerController : NetworkBehaviour
+    public class PlayerController : MonoBehaviour
     {
         [SerializeField] private MeshRenderer model;
         [SerializeField] private float moveSpeed;
 
         public int CurrentCellIndex { get; private set; }
         private int LastUsedCardIndex { get; set; }
+        
+        public bool isOwned { get; private set; }
 
         private SaLBoard board;
 
@@ -21,13 +21,10 @@ namespace Player
 
         private Coroutine playerMoveCoroutine;
 
-        public override void OnNetworkSpawn()
+        public void Init(int i, Color playerColor)
         {
-            board = SaLBoard.Instance;
-            playerID = (int)NetworkManager.Singleton.LocalClientId;
-            var index = World.Get.Board.PlayerCharacterIndex;
-            model.material.color = Game.GameManager.Instance.GetPlayerColor(index);
-            Game.GameManager.Instance.AppendPlayerController(this, index);
+            playerID = i;
+            model.material.color = playerColor;
         }
 
         public void MoveToCell(int moveCount, int lastUsedCardIndex, bool shouldTriggerFinishMove)

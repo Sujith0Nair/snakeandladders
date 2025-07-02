@@ -2,12 +2,16 @@ using System.Collections.Generic;
 using System.Linq;
 using _Main;
 using Game;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace Deck
 {
     public class DeckManager : MonoBehaviour
     {
+        public static DeckManager Instance;
+        
         [SerializeField] private int deckSize;
         [SerializeField] private GameObject deckCardUIPrefab;
 
@@ -23,24 +27,35 @@ namespace Deck
 
         public List<CardSO> allCardTypes;
 
-        private List<CardSO> deck;
-        private Queue<CardSO> pile;
-
-        private List<Card>[] playerHands;
-
-        private void Start()
+        private List<CardSO> deckMap;
+        private Queue<int> pile;
+        private List<int> playerHands;
+        
+        private int moveCardMaxIndex;
+        
+        private void Awake()
         {
-            deck = new List<CardSO>();
-            pile = new Queue<CardSO>();
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
 
-            var playerCount = World.Get.Board.PlayerCountInMatch;
-            
-            playerHands = new List<Card>[playerCount];
+        private void OnDestroy()
+        {
+            Instance = null;
+            GameManager.Instance.OnPlayerUsedCard -= OnPlayerUsedCard;
+        }
 
-            player1CardAttachPoint.SetActive(playerCount >= 1);
-            player2CardAttachPoint.SetActive(playerCount >= 2);
-            player3CardAttachPoint.SetActive(playerCount >= 3);
-            player4CardAttachPoint.SetActive(playerCount >= 4);
+        public void Init()
+        {
+            deckMap = new();
+            pile = new();
+            playerHands = new();
 
             GameManager.Instance.OnPlayerUsedCard += OnPlayerUsedCard;
 
@@ -50,68 +65,59 @@ namespace Deck
             ResetForcePlayerToSnakeUIs();
 
             InitializeDeck();
-            DealCardsToPlayers(deckSize);
         }
 
-        private void OnDestroy()
+        public void SetupDeckUI()
         {
-            GameManager.Instance.OnPlayerUsedCard -= OnPlayerUsedCard;
+            player1CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerIndex == 0);
+            player2CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerIndex == 1 );
+            player3CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerIndex == 2);
+            player4CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerIndex == 3 );
         }
 
         private void OnPlayerUsedCard(int playerID, int cardIndex)
         {
-            // Debug.LogError($"Player Index -> {playerID} & Card Index -> {cardIndex}");
+            /*// Debug.LogError($"Player Index -> {playerID} & Card Index -> {cardIndex}");
             var usedCard = playerHands[playerID][cardIndex].cardData;
             var newCard = GetNewCardFromPile();
             Debug.LogError($"ID {playerID + 1} Used Card -> {usedCard.cardName} & New Card -> {newCard.cardName}");
             playerHands[playerID][cardIndex].UpdateData(newCard);
-            AddCardToPile(usedCard);
+            AddCardToPile(usedCard);*/
         }
 
         private void InitializeDeck()
         {
-            deck.Clear();
+            deckMap.Clear();
 
             foreach (var entry in allCardTypes)
             {
                 for (var i = 0; i < entry.cardDeckCount; i++)
                 {
-                    deck.Add(entry);
+                    if (entry.cardType.Equals(CardType.MovementCards))
+                    {
+                        moveCardMaxIndex++;
+                    }
+                    
+                    deckMap.Add(entry);
                 }
             }
         }
 
-        private void DealCardsToPlayers(int cardsPerPlayer)
+        public void DealCardsToPlayers()
         {
-            var movementCards = new List<CardSO>();
-            var otherCards = new List<CardSO>();
+            var movementCardIndexList = Enumerable.Range(0, moveCardMaxIndex).ToList();
+            ShuffleList(movementCardIndexList);
+            
+            pile = new Queue<int>(Enumerable.Reverse(movementCardIndexList));
 
-            foreach (var card in deck)
+            for (int j = 0; j < deckSize; j++)
             {
-                if (card.cardType == CardType.MovementCards)
-                {
-                    movementCards.Add(card);
-                }
-                else
-                {
-                    otherCards.Add(card);
-                }
-            }
-
-            ShuffleList(movementCards);
-
-            pile = new Queue<CardSO>(movementCards);
-
-            for (int i = 0; i < GameManager.Instance.playerCount; i++)
-            {
-                playerHands[i] = new List<Card>();
-
-                for (int j = 0; j < cardsPerPlayer; j++)
+                foreach (var connectedClientsId in NetworkManager.Singleton.ConnectedClientsIds)
                 {
                     if (pile.Count > 0)
                     {
-                        var cardData = GetNewCardFromPile();
-                        SpawnCardUIToPlayerDeck(cardData, i, j);
+                        var cardIndexOfDeck = GetNewCardFromPile();
+                        Networking.Server.GameManager.Instance.SpawnCardUIToPlayerDeck(connectedClientsId, cardIndexOfDeck);
                     }
                     else
                     {
@@ -122,13 +128,11 @@ namespace Deck
             }
 
             var remainingPile = pile.ToList(); //get dealt pile
-            remainingPile.AddRange(otherCards); //add other cards
+            remainingPile.AddRange(Enumerable.Range(moveCardMaxIndex, deckMap.Count - moveCardMaxIndex).ToList()); //Add left Over Cards From Deck
 
             ShuffleList(remainingPile); //Shuffle the full pile
 
-            pile = new Queue<CardSO>(remainingPile); //recreate pile
-
-            deck.Clear();
+            pile = new Queue<int>(Enumerable.Reverse(remainingPile)); //recreate pile
         }
 
         private void ShuffleList<T>(List<T> list)
@@ -172,17 +176,17 @@ namespace Deck
             }
         }
 
-        private CardSO GetNewCardFromPile()
+        private int GetNewCardFromPile()
         {
             return pile.Dequeue();
         }
 
-        private void AddCardToPile(CardSO card)
+        private void AddCardToPile(int cardIndex)
         {
-            pile.Enqueue(card);
+            pile.Enqueue(cardIndex);
         }
 
-        private void SpawnCardUIToPlayerDeck(CardSO cardData, int playerIndex, int cardIndex)
+        public void SpawnCardUIToPlayerDeck(int playerIndex, int cardIndexOfDeck)
         {
             Transform cardParent;
 
@@ -208,17 +212,20 @@ namespace Deck
                 return;
             }
 
+            var cardData = deckMap[cardIndexOfDeck];
+            
             var spawnedCard = Instantiate(deckCardUIPrefab, cardParent).GetComponent<Card>();
-            spawnedCard.SetupData(cardData, playerIndex, cardIndex);
+            spawnedCard.SetupData(cardData, playerIndex, cardIndexOfDeck);
 
-            playerHands[playerIndex].Add(spawnedCard);
+            playerHands.Add(cardIndexOfDeck);
         }
 
         public bool CheckIfPlayerHasRetreatCard(int playerID)
         {
-            return playerHands[playerID]
+            return false;
+            /*return playerHands[playerID]
                 .Find(x => x.cardData.cardType.Equals(CardType.ActionCards) &&
-                           x.cardData.actionCardType.Equals(ActionCardType.Retreat));
+                           x.cardData.actionCardType.Equals(ActionCardType.Retreat));*/
         }
 
         public void ShowRetreatCancelUI(int currentPlayerTurn)
@@ -267,24 +274,28 @@ namespace Deck
 
         public bool HasHoldYourGround(int playerID, out int cardIndex)
         {
-            var foundCard = playerHands[playerID]
+            cardIndex = -1;
+            return false;
+            /*var foundCard = playerHands[playerID]
                 .Find(x => x.cardData.cardType.Equals(CardType.DefensiveCards) &&
                            x.cardData.defensiveCardType.Equals(DefensiveCardType.HoldYourGround));
 
             cardIndex = foundCard ? foundCard.cardIndex : -1;
 
-            return foundCard;
+            return foundCard;*/
         }
 
         public bool HasSnakeTamer(int playerID, out int cardIndex)
         {
-            var foundCard = playerHands[playerID]
+            cardIndex = -1;
+            return false;
+            /*var foundCard = playerHands[playerID]
                 .Find(x => x.cardData.cardType.Equals(CardType.DefensiveCards) &&
                            x.cardData.defensiveCardType.Equals(DefensiveCardType.SnakeTamer));
 
             cardIndex = foundCard ? foundCard.cardIndex : -1;
 
-            return foundCard;
+            return foundCard;*/
         }
     }
 }
