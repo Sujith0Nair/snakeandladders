@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Linq;
 using Unity.Netcode;
 using _Main.ScriptableObjects;
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 namespace Networking.Server
@@ -21,18 +22,31 @@ namespace Networking.Server
 
         public override void OnNetworkSpawn()
         {
+            if (IsSessionOwner)
+            {
+                NetworkManager.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
+            }
+
             // Select the snake preset and pass it to all the players
-            snakePresetsHolder.Initialize();
-            var randomPreset = snakePresetsHolder.GetRandomPreset();
-            var index = snakePresetsHolder.GetIndexOfPreset(randomPreset);
-            SpawnSnake_Rpc(index);
+            // snakePresetsHolder.Initialize();
+            // var randomPreset = snakePresetsHolder.GetRandomPreset();
+            // var index = snakePresetsHolder.GetIndexOfPreset(randomPreset);
+            // SpawnSnake_Rpc(index);
             
             // Spawn player
-            SpawnPlayersLocally_Rpc(NetworkManager.Singleton.LocalClientId);
+            //SpawnPlayersLocally_Rpc(NetworkManager.Singleton.LocalClientId);
             
             // Hide the UI of the deck of the rest of the people
             
             // Choose the current person to play the game.
+        }
+
+        private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
+        {
+            if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted)
+            {
+                Debug.Log($"Load Event Completed Scene Name : {sceneEvent.SceneName} ");
+            }
         }
 
         [Rpc(SendTo.Everyone)]

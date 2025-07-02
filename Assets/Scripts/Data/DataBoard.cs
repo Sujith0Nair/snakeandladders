@@ -19,7 +19,7 @@ namespace Data
         
         private static int GetPlayerCountInMatch()
         {
-            return PlayerPrefs.GetInt(KeyToPrefName["PlayerCount"], 1);
+            return PlayerPrefs.GetInt(KeyToPrefName["PlayerCount"], 2);
         }
         
         private static void SetPlayerCountInMatch(int playerCountInMatch)
