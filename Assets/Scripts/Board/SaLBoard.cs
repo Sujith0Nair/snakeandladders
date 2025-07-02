@@ -21,18 +21,23 @@ namespace Board
         [SerializeField] private SnakePresetsHolder snakePresetsHolder;
         [SerializeField] private GameManager gameManager;
 
-        private SnakeCoordPreset currentSnakePreset;
+        public SnakeCoordPreset CurrentSnakePreset { get; private set; }
 
         private List<BoardCell> cells = new();
         private Dictionary<int, Ladder> ladderMap = new();
         private Dictionary<int, Snake> snakeMap = new();
 
+        public static SaLBoard Instance { get; private set; }
+
+        private void Awake()
+        {
+            Instance = this;
+        }
+
         private void Start()
         {
             GenerateBoard();
             AddLaddersOnBoard();
-            snakePresetsHolder.Initialize();
-            AddSnakesOnBoard(true);
         }
 
         private void GenerateBoard()
@@ -80,24 +85,19 @@ namespace Board
                 Debug.Log($"Ladder from {from} to {to}. Ladder: {ladder}", ladder);
             }
         }
-        
-        private void AddSnakesOnBoard(bool isFirstTime = false)
+
+        public void SpawnSnakesBasedOnPreset(int presetIndex)
         {
-            SnakeCoordPreset preset;
-            if (isFirstTime)
-            {
-                snakePresetsHolder.Initialize();
-                preset = snakePresetsHolder.GetRandomPreset();
-            }
-            else
-            {
-                var playerOccupiedCells = gameManager.Players.Where(x => x.CurrentCellIndex > 31).Select(x => x.CurrentCellIndex).ToList();
-                preset = snakePresetsHolder.GetPresetWithinInterestOfCells(currentSnakePreset, playerOccupiedCells);
-            }
+            var preset = snakePresetsHolder.GetPreset(presetIndex);
+            SpawnSnakesOnBoard(preset);
+        }
+
+        private void SpawnSnakesOnBoard(SnakeCoordPreset preset)
+        {
+            snakeMap.Clear();
+            CurrentSnakePreset = preset;
             
-            currentSnakePreset =  preset;
-            
-            foreach (var coord in currentSnakePreset.Coords)
+            foreach (var coord in CurrentSnakePreset.Coords)
             {
                 var from = coord.x;
                 var to = coord.y;
@@ -183,6 +183,7 @@ namespace Board
             ClearCells();
             ClearLadders();
             ClearSnakes();
+            Instance = null;
         }
 
         private void ClearCells()
@@ -210,7 +211,7 @@ namespace Board
             ladderMap = null;
         }
 
-        private void ClearSnakes()
+        public void ClearSnakes()
         {
             foreach (var (_, snake) in snakeMap)
             {
@@ -222,13 +223,6 @@ namespace Board
 
             snakeMap.Clear();
             snakeMap = null;
-        }
-
-        public void RandomizeSnake()
-        {
-            ClearSnakes();
-            snakeMap = new Dictionary<int, Snake>();
-            AddSnakesOnBoard();
         }
 
         public void BlockAllLadders()

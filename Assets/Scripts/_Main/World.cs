@@ -25,6 +25,7 @@ namespace _Main
         
         private void OnDestroy()
         {
+            DataBoard.ClearData();
             Get = null;
         }
     }

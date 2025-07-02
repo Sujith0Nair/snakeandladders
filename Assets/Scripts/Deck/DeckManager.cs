@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using _Main;
 using Game;
 using UnityEngine;
 
@@ -31,12 +32,15 @@ namespace Deck
         {
             deck = new List<CardSO>();
             pile = new Queue<CardSO>();
-            playerHands = new List<Card>[GameManager.Instance.playerCount];
 
-            player1CardAttachPoint.SetActive(GameManager.Instance.playerCount >= 1);
-            player2CardAttachPoint.SetActive(GameManager.Instance.playerCount >= 2);
-            player3CardAttachPoint.SetActive(GameManager.Instance.playerCount >= 3);
-            player4CardAttachPoint.SetActive(GameManager.Instance.playerCount >= 4);
+            var playerCount = World.Get.Board.PlayerCountInMatch;
+            
+            playerHands = new List<Card>[playerCount];
+
+            player1CardAttachPoint.SetActive(playerCount >= 1);
+            player2CardAttachPoint.SetActive(playerCount >= 2);
+            player3CardAttachPoint.SetActive(playerCount >= 3);
+            player4CardAttachPoint.SetActive(playerCount >= 4);
 
             GameManager.Instance.OnPlayerUsedCard += OnPlayerUsedCard;
 
@@ -70,7 +74,7 @@ namespace Deck
 
             foreach (var entry in allCardTypes)
             {
-                for (int i = 0; i < entry.cardDeckCount; i++)
+                for (var i = 0; i < entry.cardDeckCount; i++)
                 {
                     deck.Add(entry);
                 }

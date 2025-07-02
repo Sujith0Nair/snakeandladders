@@ -82,7 +82,13 @@ namespace _Main.ScriptableObjects
             return GetPreset(Random.Range(0, presets.Length));
         }
 
-        private SnakeCoordPreset GetPreset(int index)
+        public int GetIndexOfPreset(SnakeCoordPreset preset)
+        {
+            if (preset == null) return -1;
+            return Array.IndexOf(presets, preset);
+        }
+
+        public SnakeCoordPreset GetPreset(int index)
         {
             if (index >= 0 && index < presets.Length)
             {

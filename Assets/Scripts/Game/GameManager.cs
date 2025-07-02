@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using _Main;
 using Board;
 using Deck;
 using Player;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 namespace Game
@@ -69,7 +68,7 @@ namespace Game
             Instance = null;
         }
 
-        private IEnumerator Start()
+        private void Start()
         {
             playerCount = World.Get.Board.PlayerCountInMatch;
             
@@ -77,13 +76,18 @@ namespace Game
 
             currentPlayerTurn = 0;
 
-            players = new List<PlayerController>();
-            
-            var currentScene = gameObject.scene;
-            
-            yield return new WaitUntil(() => SceneManager.GetActiveScene() == currentScene);
+            players = new List<PlayerController>(playerCount);
 
-            SpawnPlayer();
+            for (var i = 0; i < playerCount; i++)
+            {
+                players.Add(null);
+            }
+            
+            // var currentScene = gameObject.scene;
+            //
+            // yield return new WaitUntil(() => SceneManager.GetActiveScene() == currentScene);
+            //
+            // SpawnPlayer();
         }
 
         private void Update()
@@ -97,35 +101,39 @@ namespace Game
             }
         }
 
-        private void SpawnPlayer()
+        // private void SpawnPlayer()
+        // {
+        //     for (int i = 0; i < playerCount; i++)
+        //     {
+        //         var spawnedPlayer = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
+        //         var playerController = spawnedPlayer.GetComponent<PlayerController>();
+        //         playerController.Init(board, i, GetPlayerColor(i));
+        //         players.Add(playerController);
+        //     }
+        // }
+
+        public void SpawnPlayer(int playerId)
         {
-            for (int i = 0; i < playerCount; i++)
-            {
-                var spawnedPlayer = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
-                var playerController = spawnedPlayer.GetComponent<PlayerController>();
-                playerController.Init(board, i, GetPlayerColor(i));
-                players.Add(playerController);
-            }
+            var spawnedPlayer = Instantiate(playerPrefab, spawnPoint.position, Quaternion.identity);
+            var networkObject = spawnedPlayer.GetComponent<NetworkObject>();
+            networkObject.Spawn(true);
         }
 
-        private Color GetPlayerColor(int playerID)
+        public void AppendPlayerController(PlayerController playerController, int index)
         {
-            if (playerID == 0)
-            {
-                return player1Color;
-            }
+            players.Insert(index, playerController);
+            Debug.Log($"Appending PlayerController at: {index}");
+        }
 
-            if (playerID == 1)
+        public Color GetPlayerColor(int playerID)
+        {
+            return playerID switch
             {
-                return player2Color;
-            }
-
-            if (playerID == 2)
-            {
-                return player3Color;
-            }
-
-            return player4Color;
+                0 => player1Color,
+                1 => player2Color,
+                2 => player3Color,
+                _ => player4Color
+            };
         }
 
         private void SelectLadder()
@@ -325,12 +333,14 @@ namespace Game
 
         private void RoundCompleted()
         {
+            // TODO: Need to move the whole thing to server side
+            
             var randomDiceRoll = Random.Range(1, 7);
             Debug.LogError($"Dice Roll By AI : {randomDiceRoll}");
             
-            if (randomDiceRoll == 1 || randomDiceRoll == 6)
+            if (randomDiceRoll is 1 or 6)
             {
-                board.RandomizeSnake();
+                Networking.Server.GameManager.Instance.RandomiseSnakePositions();
             }
 
             //Make Sure Player Moves In Same Index To Trigger Snake Check

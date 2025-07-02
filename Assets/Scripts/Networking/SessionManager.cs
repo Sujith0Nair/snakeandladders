@@ -27,18 +27,16 @@ namespace Networking
         [SerializeField] private CharacterSelectionContext context;
 
         private string enteredRoomId;
-        private ISession session;
         private float sceneLoadProgress;
         private bool isSceneLoaded;
 
-        private ISession ActiveSession
+        private static ISession ActiveSession
         {
-            get => session;
+            get => World.Get.ActiveSession;
             set
             {
-                session = value;
-                World.Get.ActiveSession = session;
-                Debug.Log($"Session set to {session}");
+                World.Get.ActiveSession = value;
+                Debug.Log($"Session set to {value}");
             }
         }
 
