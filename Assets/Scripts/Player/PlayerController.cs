@@ -12,18 +12,14 @@ namespace Player
 
         public int CurrentCellIndex { get; private set; }
         private int LastUsedCardIndex { get; set; }
-        
-        public bool isOwned { get; private set; }
-
-        private SaLBoard board;
 
         private int playerID;
 
         private Coroutine playerMoveCoroutine;
 
-        public void Init(int i, Color playerColor)
+        public void Init(int playerID, Color playerColor)
         {
-            playerID = i;
+            this.playerID = playerID;
             model.material.color = playerColor;
         }
 
@@ -39,7 +35,7 @@ namespace Player
 
         private IEnumerator MoveToCellCoroutine(int cellIndex, bool shouldTriggerFinishMove)
         {
-            var allToMoveCells = board.GetPathInRange(CurrentCellIndex, cellIndex);
+            var allToMoveCells = SaLBoard.Instance.GetPathInRange(CurrentCellIndex, cellIndex);
             while (allToMoveCells.Count > 0)
             {
                 var cell = allToMoveCells[0];
@@ -49,8 +45,8 @@ namespace Player
                 CurrentCellIndex = cellIndex;
             }
 
-            var isOnLadder = board.IsOnLadder(cellIndex, out (int index, Vector3 position) target);
-            var canLadderBeUsed = board.CheckIfLadderIsBlocked(cellIndex);
+            var isOnLadder = SaLBoard.Instance.IsOnLadder(cellIndex, out (int index, Vector3 position) target);
+            var canLadderBeUsed = SaLBoard.Instance.CheckIfLadderIsBlocked(cellIndex);
             if (isOnLadder && !canLadderBeUsed)
             {
                 Debug.Log($"Player moving to ladder {CurrentCellIndex}");
@@ -59,7 +55,7 @@ namespace Player
                 goto final;
             }
 
-            var isOnSnake = board.IsOnSnake(cellIndex, out target);
+            var isOnSnake = SaLBoard.Instance.IsOnSnake(cellIndex, out target);
             if (isOnSnake)
             {
                 Debug.Log($"Player moving to snake {CurrentCellIndex}");

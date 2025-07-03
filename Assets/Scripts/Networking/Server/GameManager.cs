@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using Board;
 using UnityEngine;
 using System.Linq;
@@ -14,14 +13,13 @@ namespace Networking.Server
     public class GameManager : NetworkBehaviour
     {
         [SerializeField] private SnakePresetsHolder snakePresetsHolder;
-        
+
         public static GameManager Instance { get; private set; }
         public ulong LocalClientId { get; private set; }
-        public int LocalPlayerIndex { get; private set; }
+        public int LocalPlayerID { get; private set; }
 
         private int playerIndex;
-        
-        
+
         private void Awake()
         {
             Instance = this;
@@ -35,15 +33,8 @@ namespace Networking.Server
             }
 
             LocalClientId = NetworkManager.LocalClientId;
-
-            // Spawn player
-            //SpawnPlayersLocally_Rpc(NetworkManager.Singleton.LocalClientId);
-
-            // Hide the UI of the deck of the rest of the people
-
-            // Choose the current person to play the game.
         }
-        
+
         private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
         {
             if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted)
@@ -56,13 +47,13 @@ namespace Networking.Server
         private void SetupGame()
         {
             playerIndex = 0;
-            
+
             // Select the snake preset and pass it to all the players
             snakePresetsHolder.Initialize();
             var randomPreset = snakePresetsHolder.GetRandomPreset();
             var index = snakePresetsHolder.GetIndexOfPreset(randomPreset);
             SpawnSnake_Rpc(index);
-            
+
             SetupLocalGameManger_RPC();
 
             StartCoroutine(DelaySetupDeckUI());
@@ -79,7 +70,7 @@ namespace Networking.Server
         [Rpc(SendTo.Everyone)]
         private void SetupLocalGameManger_RPC()
         {
-           Game.GameManager.Instance.Init();
+            Game.GameManager.Instance.Init();
         }
 
         [Rpc(SendTo.Everyone)]
@@ -107,7 +98,7 @@ namespace Networking.Server
                 Debug.Log($"Since not session owner returning!");
                 return;
             }
-            
+
             var randomValue = Random.Range(1, 7);
             Debug.LogError($"Random Value : {randomValue}");
 
@@ -121,11 +112,15 @@ namespace Networking.Server
             TryMovingTheLocalPlayer_Rpc();
             ToggleLadderStatus_Rpc(true);
         }
-        
+
         private void RandomiseSnakePositions()
-        {   
-            var playerOccupiedCells = Game.GameManager.Instance.Players.Where(x => x.CurrentCellIndex > 31).Select(x => x.CurrentCellIndex).ToList();
-            var preset = snakePresetsHolder.GetPresetWithinInterestOfCells(SaLBoard.Instance.CurrentSnakePreset, playerOccupiedCells);
+        {
+            var playerOccupiedCells = Game.GameManager.Instance.Players.Where(x => x.CurrentCellIndex > 31)
+                .Select(x => x.CurrentCellIndex)
+                .ToList();
+            var preset =
+                snakePresetsHolder.GetPresetWithinInterestOfCells(SaLBoard.Instance.CurrentSnakePreset,
+                    playerOccupiedCells);
             var presetIndex = snakePresetsHolder.GetIndexOfPreset(preset);
             ClearAndSpawnBackSnakes_Rpc(presetIndex);
         }
@@ -143,7 +138,7 @@ namespace Networking.Server
             Game.GameManager.Instance.TryMovingPlayerToCheckForSnake();
             Game.GameManager.Instance.TurnCompleteCheck();
         }
-        
+
         [Rpc(SendTo.Everyone)]
         private void ToggleLadderStatus_Rpc(bool status)
         {
@@ -167,10 +162,10 @@ namespace Networking.Server
         [Rpc(SendTo.SpecifiedInParams)]
         private void SetupLocalPlayerIndex_RPC(int playerIndex, RpcParams rpcParams = default)
         {
-            LocalPlayerIndex  = playerIndex;
+            LocalPlayerID = playerIndex;
             Debug.LogError($"Local Player Index : {playerIndex}");
         }
-        
+
         public void SpawnCardUIToPlayerDeck(ulong targetClientID, int cardIndexInDeck)
         {
             SpawnCardUIToPlayerDeck_RPC(cardIndexInDeck, RpcTarget.Single(targetClientID, RpcTargetUse.Temp));
@@ -179,7 +174,19 @@ namespace Networking.Server
         [Rpc(SendTo.SpecifiedInParams)]
         private void SpawnCardUIToPlayerDeck_RPC(int cardIndexInDeck, RpcParams rpcParams = default)
         {
-            DeckManager.Instance.SpawnCardUIToPlayerDeck(LocalPlayerIndex,cardIndexInDeck);
+            DeckManager.Instance.SpawnCardUIToPlayerDeck(LocalPlayerID, cardIndexInDeck);
+        }
+
+        [Rpc(SendTo.Server)]
+        public void PlayCard_RPC(int playerID, int cardIndexInDeck, int cardIndexInUI)
+        {
+            Game.GameManager.Instance.PlayCard(playerID, cardIndexInDeck,cardIndexInUI);
+        }
+
+        [Rpc(SendTo.NotServer)]
+        public void MovePlayerToCell_RPC(int playerID, int moveCount, int cardIndexInUI)
+        {
+            Game.GameManager.Instance.MovePlayerToCell(playerID, moveCount, cardIndexInUI);
         }
     }
 }

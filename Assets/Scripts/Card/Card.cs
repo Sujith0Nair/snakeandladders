@@ -9,15 +9,17 @@ namespace Deck
         [SerializeField] private TextMeshProUGUI cardNameText;
 
         public CardSO cardData { get; private set; }
-        public int cardIndex { get; private set; }
+        public int cardIndexInDeck { get; private set; }
+        public int cardIndexInUI { get; private set; }
 
         private int playerID;
 
-        public void SetupData(CardSO cardData, int playerID, int cardIndex)
+        public void SetupData(CardSO cardData, int playerID, int cardIndexInDeck, int cardIndexInUI)
         {
             this.cardData = cardData;
             this.playerID = playerID;
-            this.cardIndex = cardIndex;
+            this.cardIndexInDeck = cardIndexInDeck;
+            this.cardIndexInUI = cardIndexInUI;
 
             UpdateUI();
         }
@@ -30,7 +32,7 @@ namespace Deck
 
         public void PlayCard()
         {
-            GameManager.Instance.PlayCard(playerID, cardIndex, cardData);
+            GameManager.Instance.PlayCard(playerID, cardIndexInDeck, cardIndexInUI);
         }
 
         private void UpdateUI()

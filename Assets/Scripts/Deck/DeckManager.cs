@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using _Main;
 using Game;
-using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -11,7 +9,7 @@ namespace Deck
     public class DeckManager : MonoBehaviour
     {
         public static DeckManager Instance;
-        
+
         [SerializeField] private int deckSize;
         [SerializeField] private GameObject deckCardUIPrefab;
 
@@ -29,10 +27,10 @@ namespace Deck
 
         private List<CardSO> deckMap;
         private Queue<int> pile;
-        private List<int> playerHands;
-        
+        private List<Card> playerHand;
+
         private int moveCardMaxIndex;
-        
+
         private void Awake()
         {
             if (Instance == null)
@@ -55,7 +53,7 @@ namespace Deck
         {
             deckMap = new();
             pile = new();
-            playerHands = new();
+            playerHand = new();
 
             GameManager.Instance.OnPlayerUsedCard += OnPlayerUsedCard;
 
@@ -69,20 +67,23 @@ namespace Deck
 
         public void SetupDeckUI()
         {
-            player1CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerIndex == 0);
-            player2CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerIndex == 1 );
-            player3CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerIndex == 2);
-            player4CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerIndex == 3 );
+            player1CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerID == 0);
+            player2CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerID == 1);
+            player3CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerID == 2);
+            player4CardAttachPoint.SetActive(Networking.Server.GameManager.Instance.LocalPlayerID == 3);
         }
 
-        private void OnPlayerUsedCard(int playerID, int cardIndex)
+        private void OnPlayerUsedCard(int playerID, int cardIndexInUI)
         {
-            /*// Debug.LogError($"Player Index -> {playerID} & Card Index -> {cardIndex}");
-            var usedCard = playerHands[playerID][cardIndex].cardData;
+            Debug.LogError($"Player Index -> {playerID} & Card Index -> {cardIndexInUI}");
+            var usedCardData = playerHand[cardIndexInUI].cardData;
+            
             var newCard = GetNewCardFromPile();
-            Debug.LogError($"ID {playerID + 1} Used Card -> {usedCard.cardName} & New Card -> {newCard.cardName}");
-            playerHands[playerID][cardIndex].UpdateData(newCard);
-            AddCardToPile(usedCard);*/
+            var newCardData = deckMap[newCard];
+            
+            Debug.LogError($"ID {playerID + 1} Used Card -> {usedCardData.cardName} & New Card -> {newCardData.cardName}");
+            playerHand[cardIndexInUI].UpdateData(newCardData);
+            AddCardToPile( playerHand[cardIndexInUI].cardIndexInDeck);
         }
 
         private void InitializeDeck()
@@ -97,7 +98,7 @@ namespace Deck
                     {
                         moveCardMaxIndex++;
                     }
-                    
+
                     deckMap.Add(entry);
                 }
             }
@@ -107,7 +108,7 @@ namespace Deck
         {
             var movementCardIndexList = Enumerable.Range(0, moveCardMaxIndex).ToList();
             ShuffleList(movementCardIndexList);
-            
+
             pile = new Queue<int>(Enumerable.Reverse(movementCardIndexList));
 
             for (int j = 0; j < deckSize; j++)
@@ -117,7 +118,8 @@ namespace Deck
                     if (pile.Count > 0)
                     {
                         var cardIndexOfDeck = GetNewCardFromPile();
-                        Networking.Server.GameManager.Instance.SpawnCardUIToPlayerDeck(connectedClientsId, cardIndexOfDeck);
+                        Networking.Server.GameManager.Instance.SpawnCardUIToPlayerDeck(connectedClientsId,
+                            cardIndexOfDeck);
                     }
                     else
                     {
@@ -128,7 +130,8 @@ namespace Deck
             }
 
             var remainingPile = pile.ToList(); //get dealt pile
-            remainingPile.AddRange(Enumerable.Range(moveCardMaxIndex, deckMap.Count - moveCardMaxIndex).ToList()); //Add left Over Cards From Deck
+            remainingPile.AddRange(Enumerable.Range(moveCardMaxIndex, deckMap.Count - moveCardMaxIndex)
+                .ToList()); //Add left Over Cards From Deck
 
             ShuffleList(remainingPile); //Shuffle the full pile
 
@@ -213,11 +216,11 @@ namespace Deck
             }
 
             var cardData = deckMap[cardIndexOfDeck];
-            
-            var spawnedCard = Instantiate(deckCardUIPrefab, cardParent).GetComponent<Card>();
-            spawnedCard.SetupData(cardData, playerIndex, cardIndexOfDeck);
 
-            playerHands.Add(cardIndexOfDeck);
+            var spawnedCard = Instantiate(deckCardUIPrefab, cardParent).GetComponent<Card>();
+            spawnedCard.SetupData(cardData, playerIndex, cardIndexOfDeck, cardParent.childCount - 2); //Why -2 is cause Index Start From 0 & first child is something else in UI
+
+            playerHand.Add(spawnedCard);
         }
 
         public bool CheckIfPlayerHasRetreatCard(int playerID)
@@ -296,6 +299,11 @@ namespace Deck
             cardIndex = foundCard ? foundCard.cardIndex : -1;
 
             return foundCard;*/
+        }
+
+        public CardSO GetCardData(int cardIndexInDeck)
+        {
+            return deckMap[cardIndexInDeck];
         }
     }
 }

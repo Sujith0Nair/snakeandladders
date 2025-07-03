@@ -7,9 +7,9 @@ namespace GameUI
     public class GameUIController : MonoBehaviour
     {
         public static GameUIController Instance;
-        
+
         [SerializeField] private TextMeshProUGUI currentPlayerTurnText;
-        
+
         private void Awake()
         {
             if (Instance == null)

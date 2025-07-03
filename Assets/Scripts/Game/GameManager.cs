@@ -36,7 +36,7 @@ namespace Game
         public Action<int, int> OnPlayerUsedCard;
 
         private List<PlayerController> players;
-        
+
         public IReadOnlyList<PlayerController> Players => players;
 
         private bool canPreformAction;
@@ -50,7 +50,6 @@ namespace Game
         private bool checkForLadderSelectRaycast;
 
         private int lastUsedCardIndex;
-        
 
         private void Awake()
         {
@@ -72,14 +71,15 @@ namespace Game
         public void Init()
         {
             playerCount = World.Get.Board.PlayerCountInMatch;
-            
+
             canPreformAction = true;
 
             currentPlayerTurn = 0;
-            
+
             players = new List<PlayerController>(playerCount);
 
-            Networking.Server.GameManager.Instance.RegisterAsLocalPlayer_RPC(Networking.Server.GameManager.Instance.LocalClientId);
+            Networking.Server.GameManager.Instance.RegisterAsLocalPlayer_RPC(Networking.Server.GameManager.Instance
+                .LocalClientId);
 
             SpawnPlayer();
 
@@ -107,12 +107,6 @@ namespace Game
                 playerController.Init(i, GetPlayerColor(i));
                 players.Add(playerController);
             }
-        }
-
-        public void AppendPlayerController(PlayerController playerController, int index)
-        {
-            players.Insert(index, playerController);
-            Debug.Log($"Appending PlayerController at: {index}");
         }
 
         public Color GetPlayerColor(int playerID)
@@ -144,8 +138,14 @@ namespace Game
             }
         }
 
-        public void PlayCard(int playerID, int cardIndex, CardSO cardData)
+        public void PlayCard(int playerID, int cardIndexInDeck, int cardIndexInUI)
         {
+            if (!Networking.Server.GameManager.Instance.IsSessionOwner)
+            {
+                Networking.Server.GameManager.Instance.PlayCard_RPC(playerID, cardIndexInDeck,cardIndexInUI);
+                return;
+            }
+            
             if (!canPreformAction)
             {
                 return;
@@ -156,6 +156,8 @@ namespace Game
                 Debug.LogError($"Not Ur Turn!");
                 return;
             }
+
+            var cardData = DeckManager.Instance.GetCardData(cardIndexInDeck);
 
             //Player Can Only Select Retreat card if its Prev Player Used Retreat Card
             if (isRetreatCardInUse)
@@ -175,11 +177,11 @@ namespace Game
 
             if (cardData.cardType.Equals(CardType.MovementCards))
             {
-                HandleMovementCards(playerID, cardIndex, cardData);
+                HandleMovementCards(playerID, cardIndexInUI, cardData);
             }
             else if (cardData.cardType.Equals(CardType.ActionCards))
             {
-                HandleActionCard(playerID, cardIndex, cardData);
+                HandleActionCard(playerID, cardIndexInUI, cardData);
             }
             else if (cardData.cardType.Equals(CardType.DefensiveCards))
             {
@@ -192,12 +194,14 @@ namespace Game
             }
         }
 
-        private void HandleMovementCards(int playerID, int cardIndex, CardSO cardData)
+        private void HandleMovementCards(int playerID, int cardIndexInUI, CardSO cardData)
         {
             //To Check If Player is Valid Move Card
-            if (players[playerID].CurrentCellIndex + playerID <= 100)
+            if (players[playerID].CurrentCellIndex + cardData.moveTileCount <= 100)
             {
-                players[playerID].MoveToCell(cardData.moveTileCount, cardIndex, true);
+                players[playerID].MoveToCell(cardData.moveTileCount, cardIndexInUI, true);
+                Networking.Server.GameManager.Instance.MovePlayerToCell_RPC(playerID, cardData.moveTileCount,
+                    cardIndexInUI);
             }
             else
             {
@@ -240,7 +244,7 @@ namespace Game
         private void HandleRetreat(int playerID, int cardIndex, CardSO cardData)
         {
             deckManager.ResetRetreatCancelUIs();
-            
+
             isRetreatCardInUse = true;
             totalRetreatMoveCount += cardData.retreatMoveTileCount;
 
@@ -288,22 +292,37 @@ namespace Game
             OnPlayerUsedCard?.Invoke(playerID, cardIndex);
         }
 
-        public void FinishPlayerTurn(int playerID, int usedCardIndex)
+        public void FinishPlayerTurn(int playerID, int usedCardIndexInUI)
         {
             //When Action Happens Without Card No Need To Trigger Event
-            if (usedCardIndex >= 0)
+            if (usedCardIndexInUI >= 0)
             {
-                OnPlayerUsedCard?.Invoke(playerID, usedCardIndex);
+                //Only Run On LocalPlayer
+                if (playerID == Networking.Server.GameManager.Instance.LocalPlayerID)
+                {
+                    //Will Updated Card Used & Pick A New Card From Pile
+                    OnPlayerUsedCard?.Invoke(playerID, usedCardIndexInUI);
+                }
             }
             else
             {
+                //Only Run On Server
+                if (!Networking.Server.GameManager.Instance.IsSessionOwner)
+                {
+                    return;
+                }
+                
                 //Player Can Still play if some action event happened (Retreat)
                 canPreformAction = true;
                 ResetRetreatCardFlags();
                 return;
             }
 
-            UpdateToNextPlayerTurn();
+            //Only Run On Server
+            if (Networking.Server.GameManager.Instance.IsSessionOwner)
+            {
+                UpdateToNextPlayerTurn();
+            }
         }
 
         private void UpdateToNextPlayerTurn()
@@ -319,6 +338,11 @@ namespace Game
             {
                 TurnCompleteCheck();
             }
+        }
+
+        public void UpdateCanPerformAction(bool canPerformAction)
+        {
+            this.canPreformAction = canPerformAction;
         }
 
         // private void RoundCompleted()
@@ -345,9 +369,8 @@ namespace Game
 
         public void TryMovingPlayerToCheckForSnake()
         {
-            return;
-            /*var player = players[Networking.Server.GameManager.Instance.LocalId];
-            player.MoveToCell(0, -1, false);*/
+            var player = players[Networking.Server.GameManager.Instance.LocalPlayerID];
+            player.MoveToCell(0, -1, false);
         }
 
         public void TurnCompleteCheck()
@@ -508,6 +531,11 @@ namespace Game
             FinishPlayerTurn(currentPlayerTurn, lastUsedCardIndex);
 
             ResetForcePlayerToSnakeFlags();
+        }
+
+        public void MovePlayerToCell(int playerID, int moveCount, int cardIndexInUI)
+        {
+            players[playerID].MoveToCell(moveCount, cardIndexInUI, true);
         }
     }
 }
