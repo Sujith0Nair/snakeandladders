@@ -1,10 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
 using Deck;
-using SaL.Gameplay.Managers;
 using SaL.UI;
-using Unity.Netcode;
 using UnityEngine;
+using System.Linq;
+using Unity.Netcode;
+using System.Collections;
+using SaL.Gameplay.Managers;
+using System.Collections.Generic;
 
 namespace SaL.Core
 {
@@ -35,12 +36,13 @@ namespace SaL.Core
             BoardController = FindFirstObjectByType<Board.BoardController>();
         }
 
-        private void Start()
+        private IEnumerator Start()
         {
-            if (GameManager.Instance != null)
+            while (GameManager.Instance == null)
             {
-                GameManager.Instance.CurrentPlayerTurn.OnValueChanged += OnTurnChanged;
+                yield return null;
             }
+            GameManager.Instance.CurrentPlayerTurn.OnValueChanged += OnTurnChanged;
         }
 
         private void OnDestroy()
@@ -145,7 +147,7 @@ namespace SaL.Core
             GameManager.Instance.PlayCardServerRpc(cardId, targetId, ladderId);
         }
 
-        private bool RequiresPlayerTarget(CardSO.ActionCardType type)
+        private static bool RequiresPlayerTarget(CardSO.ActionCardType type)
         {
             switch (type)
             {

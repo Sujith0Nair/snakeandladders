@@ -48,5 +48,11 @@ namespace _Main
             DataBoard.ClearData();
             Get = null;
         }
+
+        public ulong GetSessionOwnerId()
+        {
+            
+            return default;
+        }
     }
 }

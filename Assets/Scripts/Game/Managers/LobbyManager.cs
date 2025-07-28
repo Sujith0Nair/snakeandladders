@@ -1,7 +1,8 @@
 using System;
-using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
+using Unity.Netcode;
+using System.Collections.Generic;
+using _Main;
 
 namespace SaL.Gameplay.Managers
 {
@@ -19,13 +20,14 @@ namespace SaL.Gameplay.Managers
         [SerializeField] private GameObject _playerPrefab;
 
         public NetworkList<Color> TakenColors { get; } = new();
-        
+
+        private uint joinedPlayers = 1;
         private Dictionary<ulong, Color> _playerColors = new();
         private Dictionary<ulong, Player.Player> _playerData = new();
 
         public override void OnNetworkSpawn()
         {
-            if (!IsHost) return;
+            if (!IsSessionOwner) return;
             Instance = this;
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
@@ -33,7 +35,7 @@ namespace SaL.Gameplay.Managers
 
         public override void OnNetworkDespawn()
         {
-            if (!IsHost) return;
+            if (!IsSessionOwner) return;
             Instance = null;
             if (NetworkManager.Singleton == null) return;
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnect;
@@ -42,13 +44,35 @@ namespace SaL.Gameplay.Managers
 
         private void OnClientConnect(ulong clientId)
         {
+            Debug.Log($"Client connected. Client ID:  {clientId}");
             var playerInstance = Instantiate(_playerPrefab);
             var networkObject = playerInstance.GetComponent<NetworkObject>();
-            networkObject.SpawnAsPlayerObject(clientId);
+            networkObject.SpawnAsPlayerObject(clientId, true);
             _playerData[clientId] = playerInstance.GetComponent<Player.Player>();
             
             // Notify other managers about the new player
             DeckManager.Instance.InitializePlayerData(clientId);
+
+            if (++joinedPlayers == World.Get.ActiveSession.MaxPlayers)
+            {
+                var sessionOwnerId = GetSessionOwnerId();
+                if (sessionOwnerId.HasValue)
+                {
+                    OnClientConnect(sessionOwnerId.Value);
+                }
+                --joinedPlayers;
+            }
+        }
+
+        private ulong? GetSessionOwnerId()
+        {
+            var connectedClients = NetworkManager.Singleton.ConnectedClients;
+            foreach (var (id, _) in connectedClients)
+            {
+                if (_playerData.ContainsKey(id)) continue;
+                return id;
+            }
+            return null;
         }
 
         private void OnClientDisconnect(ulong clientId)

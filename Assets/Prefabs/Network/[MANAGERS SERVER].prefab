@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 260203585
+  GlobalObjectIdHash: 3560583761
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 8
@@ -73,7 +73,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  _playerPrefab: {fileID: 5069044404879595852, guid: 664022d1b94fd45028f6e1f787607ed3, type: 3}
+  _playerPrefab: {fileID: 512040680704168614, guid: 370196126ab7a7e4db6942bcd1138994, type: 3}
 --- !u!114 &6927614696082792461
 MonoBehaviour:
   m_ObjectHideFlags: 0

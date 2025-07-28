@@ -8,7 +8,8 @@ using UnityEngine.UI;
 using _Main.Contexts;
 using System.Collections;
 using System.Threading.Tasks;
-using Unity.Services.Core;
+using JetBrains.Annotations;
+using SaL.Core;
 using Unity.Services.Multiplayer;
 using UnityEngine.SceneManagement;
 using Unity.Services.Authentication;
@@ -26,8 +27,8 @@ namespace Networking
         [SerializeField] private GameObject overlayPanel;
         [SerializeField] private string gameSceneName;
         [SerializeField] private CharacterSelectionContext context;
-        [SerializeField] private GameObject netMangerPrefab;
 
+        private HostManagerSpawner managerSpawner;
         private string enteredRoomId;
         private float sceneLoadProgress;
         private bool isSceneLoaded;
@@ -54,6 +55,7 @@ namespace Networking
                 enteredRoomId = joinRoomId.text;
                 OnRoomJoinClicked();
             });
+            managerSpawner = FindFirstObjectByType<HostManagerSpawner>();
         }
 
         private async void OnRoomJoinClicked()
@@ -121,7 +123,7 @@ namespace Networking
             NetworkManager.Singleton.SceneManager.OnSceneEvent += OnSceneEvent;
             NetworkManager.Singleton.SceneManager.VerifySceneBeforeUnloading += VerifySceneBeforeUnloading;
             
-            Debug.LogError($"Waiting for players to come in: {neededPlayerCount}");
+            Debug.Log($"Waiting for players to come in: {neededPlayerCount}");
 
             while (ActiveSession.PlayerCount < neededPlayerCount)
             {
@@ -133,9 +135,8 @@ namespace Networking
             LoadingScreen.ShowLoadingScreen(() => isSceneLoaded, () => sceneLoadProgress, null);
             if (!ActiveSession.IsHost) yield break;
             
+            managerSpawner.SpawnHostManagers();
             yield return new WaitForSeconds(5f);
-            
-            Instantiate(netMangerPrefab).GetComponent<NetworkObject>().Spawn();
             
             NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, LoadSceneMode.Additive);
         }
@@ -143,7 +144,6 @@ namespace Networking
         private static bool VerifySceneBeforeUnloading(Scene scene)
         {
             var result = scene.name != "Bootstrap";
-            Debug.LogError($"Verifying scene before unloading: {result} for scene name: {scene.name}");
             return result; 
         }
 
@@ -173,6 +173,7 @@ namespace Networking
             }
         }
 
+        [UsedImplicitly]
         private async void KickPlayer(string playerId)
         {
             try
@@ -187,6 +188,7 @@ namespace Networking
             }
         }
         
+        [UsedImplicitly]
         private async void LeaveSession()
         {
             try

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SaL.Core;
@@ -23,13 +24,13 @@ namespace SaL.Gameplay.Managers
 
         public override void OnNetworkSpawn()
         {
-            if (!IsHost) return;
+            if (!IsSessionOwner) return;
             Instance = this;
         }
 
         public void InitializePlayerData(ulong clientId)
         {
-            if (!IsHost) return;
+            if (!IsSessionOwner) return;
             _washHandUses[clientId] = 2; // GDD: 2 uses per game session
         }
 

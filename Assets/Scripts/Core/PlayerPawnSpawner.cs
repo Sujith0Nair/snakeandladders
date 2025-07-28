@@ -1,6 +1,6 @@
-using System.Collections.Generic;
 using SaL.Player;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace SaL.Core
 {
@@ -41,15 +41,13 @@ namespace SaL.Core
         public void DespawnPawnFor(Player.Player player)
         {
             if (player == null) return;
-            
-            if (PlayerPawns.TryGetValue(player.OwnerClientId, out var pawn))
+
+            if (!PlayerPawns.TryGetValue(player.OwnerClientId, out var pawn)) return;
+            if (pawn != null && pawn.gameObject != null)
             {
-                if (pawn != null && pawn.gameObject != null)
-                {
-                    Destroy(pawn.gameObject);
-                }
-                PlayerPawns.Remove(player.OwnerClientId);
+                Destroy(pawn.gameObject);
             }
+            PlayerPawns.Remove(player.OwnerClientId);
         }
     }
 }

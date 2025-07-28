@@ -14,23 +14,9 @@ namespace SaL.Core
         [Tooltip("The prefab containing all host-only manager scripts (LobbyManager, etc.)")]
         [SerializeField] private GameObject _hostManagersPrefab;
 
-        private void Start()
+        public void SpawnHostManagers()
         {
-            // Subscribe to the event that fires when the NetworkManager starts a server/host.
-            NetworkManager.Singleton.OnServerStarted += SpawnHostManagers;
-        }
-
-        private void OnDestroy()
-        {
-            // Always unsubscribe from events when the object is destroyed.
-            if (NetworkManager.Singleton != null)
-            {
-                NetworkManager.Singleton.OnServerStarted -= SpawnHostManagers;
-            }
-        }
-
-        private void SpawnHostManagers()
-        {
+            Debug.LogWarning("Spawning host-managers");
             // This method only runs on the host because of the OnServerStarted event.
             if (_hostManagersPrefab == null)
             {
