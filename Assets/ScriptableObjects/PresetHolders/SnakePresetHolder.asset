@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59bae8f03ac424fd084cec7685458a4d, type: 3}
+  m_Name: SnakePresetHolder
+  m_EditorClassIdentifier: 
+  Presets:
+  - {fileID: 11400000, guid: d90795bbb2d7b42f3a353e9a33bc3536, type: 2}
+  - {fileID: 11400000, guid: 0545a19bdbb5b40aabe45a8b33b27c51, type: 2}
+  - {fileID: 11400000, guid: 8dc8467fa849c432ab47d38e13611f24, type: 2}
+  - {fileID: 11400000, guid: d412ca107fad34d7594d1c375c1074b6, type: 2}
+  - {fileID: 11400000, guid: bb099cba930414dd0a54ae2caa97cd43, type: 2}
+  - {fileID: 11400000, guid: 10cab988b73014cc0b0c44c9c9aef256, type: 2}
+  - {fileID: 11400000, guid: 2d7f795dab4ae4b7280efbeed46f3a9e, type: 2}
+  - {fileID: 11400000, guid: 6d47b84aa018149c89f1da4214cada0c, type: 2}
+  - {fileID: 11400000, guid: be01f20b5800f43a49f4c5f182a002ff, type: 2}
+  - {fileID: 11400000, guid: 3cb7b1a14c30046dea2dc48ba0c586cf, type: 2}
