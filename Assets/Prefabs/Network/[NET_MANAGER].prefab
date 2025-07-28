@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8655353668430775062}
   - component: {fileID: 2038668149362132481}
   - component: {fileID: 9140744763800565328}
-  - component: {fileID: 4870151084621524634}
   m_Layer: 0
   m_Name: '[NET_MANAGER]'
   m_TagString: Untagged
@@ -113,17 +112,3 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &4870151084621524634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1136288814229443475}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e05bf80b3c5d4695b7d27109b65b136d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  snakePresetsHolder: {fileID: 11400000, guid: c369feaca4ee7b7448b384d8f771cfba, type: 2}

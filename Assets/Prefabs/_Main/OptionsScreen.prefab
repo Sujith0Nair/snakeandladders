@@ -2568,7 +2568,7 @@ MonoBehaviour:
   - {fileID: 7901279477829907200}
   - {fileID: 6726626842542231871}
   overlayPanel: {fileID: 8942268111910047221}
-  gameSceneName: DeckTest
+  gameSceneName: ProbablyMainGameScene
   context: {fileID: 8834161744303449995}
   netMangerPrefab: {fileID: 1136288814229443475, guid: 2138ce4f9f73f4d42b9b0835e489c900, type: 3}
 --- !u!1 &6128140938458157977

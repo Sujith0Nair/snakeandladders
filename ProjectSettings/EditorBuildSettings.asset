@@ -9,8 +9,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Bootstrap.unity
     guid: 37cf8203bc87c1c4294cf2ec6439ba5a
   - enabled: 1
-    path: Assets/Scenes/DeckTest.unity
-    guid: 53447ba67e563420bb497b41dc8f4eeb
+    path: Assets/Scenes/ProbablyMainGameScene.unity
+    guid: 280ac6ac8d647a9428ded6128bef5d25
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 1
