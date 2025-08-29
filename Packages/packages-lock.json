@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.adamgryu.inspectorhistory": {
+      "version": "https://github.com/adamgryu/InspectorHistory-Unity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "9bf614782015e0c71a226487b493560ebb4353ae"
+    },
     "com.dbrizov.naughtyattributes": {
       "version": "https://github.com/dbrizov/NaughtyAttributes.git#upm",
       "depth": 0,

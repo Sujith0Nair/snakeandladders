@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
+using _Main;
 using SaL.Board;
 using Deck;
 using SaL.Core;
 using SaL.Gameplay.Commands;
 using Unity.Netcode;
+using Unity.Services.Multiplayer;
 using UnityEngine;
 
 namespace SaL.Gameplay.Managers
@@ -37,10 +39,11 @@ namespace SaL.Gameplay.Managers
         private Dictionary<int, List<int>> _cellToPresetMap;
         private Dictionary<int, int> _ladderMap;
         private int _currentSnakePresetIndex = -1;
+        private static ISession CurrentSession => World.Get.ActiveSession;
 
         public override void OnNetworkSpawn()
         {
-            if (!IsHost) return;
+            if (!CurrentSession.IsHost) return;
             Instance = this;
             _commandFactory = new CommandFactory();
             LobbyManager.Instance.OnClientDisconnected += OnClientDisconnected;
@@ -48,7 +51,7 @@ namespace SaL.Gameplay.Managers
 
         public override void OnNetworkDespawn()
         {
-            if (IsHost && LobbyManager.Instance != null)
+            if (CurrentSession.IsHost && LobbyManager.Instance != null)
             {
                 LobbyManager.Instance.OnClientDisconnected -= OnClientDisconnected;
             }

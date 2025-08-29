@@ -1,5 +1,6 @@
-using Unity.Netcode;
+using _Main;
 using UnityEngine;
+using Unity.Netcode;
 
 namespace SaL.Core
 {
@@ -12,20 +13,23 @@ namespace SaL.Core
     {
         [Header("Prefabs")]
         [Tooltip("The prefab containing all host-only manager scripts (LobbyManager, etc.)")]
-        [SerializeField] private GameObject _hostManagersPrefab;
+        [SerializeField] private GameObject hostManagersPrefab;
 
         public void SpawnHostManagers()
         {
-            Debug.LogWarning("Spawning host-managers");
-            // This method only runs on the host because of the OnServerStarted event.
-            if (_hostManagersPrefab == null)
+            Debug.Log("Spawning host-managers");
+            if (!World.Get.ActiveSession.IsHost)
+            {
+                return;
+            }
+            
+            if (hostManagersPrefab == null)
             {
                 Debug.LogError("HostManagersPrefab is not assigned in the HostManagerSpawner!");
                 return;
             }
 
-            // Instantiate the prefab and spawn it on the network.
-            var instance = Instantiate(_hostManagersPrefab);
+            var instance = Instantiate(hostManagersPrefab);
             instance.GetComponent<NetworkObject>().Spawn();
         }
     }

@@ -66,15 +66,18 @@ namespace SaL.Core
 
         public void SetInitialHand(int[] cardIds)
         {
+            Debug.Log($"Set Initial Hand. Count of cards: {cardIds.Length}");
             _currentHand.Clear();
             foreach (var cardId in cardIds)
             {
                 var card = CardRegistry.Instance.GetCardById(cardId);
+                Debug.Log($"Assigned card: {card?.CardName}");
                 if (card != null)
                 {
                     _currentHand.Add(card);
                 }
             }
+            Debug.Log($"Updating hand ui with current hand");
             _handUI.UpdateHand(_currentHand);
         }
 

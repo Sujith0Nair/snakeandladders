@@ -28,7 +28,6 @@ namespace Networking
         [SerializeField] private string gameSceneName;
         [SerializeField] private CharacterSelectionContext context;
 
-        private HostManagerSpawner managerSpawner;
         private string enteredRoomId;
         private float sceneLoadProgress;
         private bool isSceneLoaded;
@@ -55,7 +54,6 @@ namespace Networking
                 enteredRoomId = joinRoomId.text;
                 OnRoomJoinClicked();
             });
-            managerSpawner = FindFirstObjectByType<HostManagerSpawner>();
         }
 
         private async void OnRoomJoinClicked()
@@ -125,19 +123,25 @@ namespace Networking
             
             Debug.Log($"Waiting for players to come in: {neededPlayerCount}");
 
+            var cachedPlayerCount = -1;
+
             while (ActiveSession.PlayerCount < neededPlayerCount)
             {
-                messageLabel.text = $"Waiting for players. Joined {ActiveSession.PlayerCount} out of {neededPlayerCount}. Join code: {enteredRoomId}";
+                if (ActiveSession.PlayerCount != cachedPlayerCount)
+                {
+                    messageLabel.text = $"Waiting for players. Joined {ActiveSession.PlayerCount} out of {neededPlayerCount}. Join code: {enteredRoomId}";
+                    cachedPlayerCount = ActiveSession.PlayerCount;
+                }
                 yield return null;
             }
             
             messageLabel.text = $"All players joined. Starting the game. Session id: {ActiveSession.Id}. Join code: {enteredRoomId}";
             LoadingScreen.ShowLoadingScreen(() => isSceneLoaded, () => sceneLoadProgress, null);
             if (!ActiveSession.IsHost) yield break;
-            
-            managerSpawner.SpawnHostManagers();
+
             yield return new WaitForSeconds(5f);
             
+            FindFirstObjectByType<HostManagerSpawner>()?.SpawnHostManagers();
             NetworkManager.Singleton.SceneManager.LoadScene(gameSceneName, LoadSceneMode.Additive);
         }
 

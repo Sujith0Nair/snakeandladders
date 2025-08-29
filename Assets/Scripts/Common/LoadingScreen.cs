@@ -76,15 +76,33 @@ namespace Common
 
         private IEnumerator LoadingRoutine()
         {
-            while (getPredicate())
+            while (getPredicate() != true)
             {
-                slider.value = getProgress();
-                yield return null;
+                var value = getProgress();
+                if (!Mathf.Approximately(value, slider.value))
+                {
+                    yield return StartCoroutine(LerpSliderToValue(value, 3f));
+                }
+                else
+                {
+                    yield return null;
+                }
             }
             yield return new WaitForSeconds(customWaitForSeconds);
             loadingRoutine = null;
             onCompleted?.Invoke();
             Hide();
+        }
+
+        private IEnumerator LerpSliderToValue(float value, float time)
+        {
+            var initialSliderValue = slider.value;
+            while (!Mathf.Approximately(initialSliderValue, value) && getPredicate() != true)
+            {
+                slider.value = Mathf.Lerp(initialSliderValue, value, time);
+                yield return null;
+            }
+            slider.value = value;
         }
 
         private void OnDestroy()

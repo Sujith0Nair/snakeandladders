@@ -1,8 +1,9 @@
+using _Main;
 using System;
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
-using _Main;
+using Unity.Services.Multiplayer;
 
 namespace SaL.Gameplay.Managers
 {
@@ -24,18 +25,25 @@ namespace SaL.Gameplay.Managers
         private uint joinedPlayers = 1;
         private Dictionary<ulong, Color> _playerColors = new();
         private Dictionary<ulong, Player.Player> _playerData = new();
+        private static ISession CurrentSession => World.Get.ActiveSession;
 
         public override void OnNetworkSpawn()
         {
-            if (!IsSessionOwner) return;
+            if (!CurrentSession.IsHost) return;
             Instance = this;
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnect;
             NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+            
+            var currentConnectedClients = NetworkManager.Singleton.ConnectedClients;
+            foreach (var (id, _) in currentConnectedClients)
+            {
+                OnClientConnect(id);
+            }
         }
 
         public override void OnNetworkDespawn()
         {
-            if (!IsSessionOwner) return;
+            if (!CurrentSession.IsHost) return;
             Instance = null;
             if (NetworkManager.Singleton == null) return;
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnect;
@@ -44,7 +52,7 @@ namespace SaL.Gameplay.Managers
 
         private void OnClientConnect(ulong clientId)
         {
-            Debug.Log($"Client connected. Client ID:  {clientId}");
+            Debug.Log($"[LobbyManager] Client connected. Client ID:  {clientId}");
             var playerInstance = Instantiate(_playerPrefab);
             var networkObject = playerInstance.GetComponent<NetworkObject>();
             networkObject.SpawnAsPlayerObject(clientId, true);
@@ -52,16 +60,6 @@ namespace SaL.Gameplay.Managers
             
             // Notify other managers about the new player
             DeckManager.Instance.InitializePlayerData(clientId);
-
-            if (++joinedPlayers == World.Get.ActiveSession.MaxPlayers)
-            {
-                var sessionOwnerId = GetSessionOwnerId();
-                if (sessionOwnerId.HasValue)
-                {
-                    OnClientConnect(sessionOwnerId.Value);
-                }
-                --joinedPlayers;
-            }
         }
 
         private ulong? GetSessionOwnerId()
@@ -125,15 +123,26 @@ namespace SaL.Gameplay.Managers
 
         public Player.Player GetPlayerData(ulong clientId) => _playerData.ContainsKey(clientId) ? _playerData[clientId] : null;
 
+        [ContextMenu("Start Game")]
         public void StartGame()
         {
-            if (!IsHost) return;
+            if (!CurrentSession.IsHost)
+            {
+                Debug.LogWarning("[LobbyManager] You are not the host. Please ask host to start the game.");
+                return;
+            }
+            
+            Debug.Log("Building the deck");
 
             // Tell the DeckManager to set up the cards
             DeckManager.Instance.BuildDeck();
+            
+            Debug.Log("Dealing initial hand");
+            
             DeckManager.Instance.DealInitialHands();
 
             // Tell the GameManager to set up the board and start the first turn
+            Debug.Log("Asking game manager to start the game");
             GameManager.Instance.StartGame();
         }
     }

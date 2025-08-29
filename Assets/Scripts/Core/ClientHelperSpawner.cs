@@ -1,5 +1,5 @@
-using Unity.Netcode;
 using UnityEngine;
+using Unity.Netcode;
 
 namespace SaL.Core
 {
@@ -12,17 +12,15 @@ namespace SaL.Core
     {
         [Header("Prefabs")]
         [Tooltip("The prefab containing all client-only helper scripts.")]
-        [SerializeField] private GameObject _clientHelpersPrefab;
+        [SerializeField] private GameObject clientHelpersPrefab;
 
         private void Start()
         {
-            // Subscribe to the event that fires when the NetworkManager starts a client.
             NetworkManager.Singleton.OnClientStarted += SpawnClientHelpers;
         }
 
         private void OnDestroy()
         {
-            // Always unsubscribe from events when the object is destroyed.
             if (NetworkManager.Singleton != null)
             {
                 NetworkManager.Singleton.OnClientStarted -= SpawnClientHelpers;
@@ -31,20 +29,18 @@ namespace SaL.Core
 
         private void SpawnClientHelpers()
         {
-            // This event fires on the Host as well, so we must ensure we are NOT the host.
             if (NetworkManager.Singleton.IsHost)
             {
                 return;
             }
 
-            if (_clientHelpersPrefab == null)
+            if (clientHelpersPrefab == null)
             {
                 Debug.LogError("ClientHelpersPrefab is not assigned in the ClientHelperSpawner!");
                 return;
             }
 
-            // Instantiate the prefab locally. It is NOT a network object.
-            Instantiate(_clientHelpersPrefab);
+            Instantiate(clientHelpersPrefab);
         }
     }
 }

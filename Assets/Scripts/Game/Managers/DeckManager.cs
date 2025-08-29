@@ -1,8 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Main;
 using SaL.Core;
 using Unity.Netcode;
+using Unity.Services.Multiplayer;
 using UnityEngine;
 using CardSO = Deck.CardSO;
 using CardType = Deck.CardSO.CardType;
@@ -21,16 +22,16 @@ namespace SaL.Gameplay.Managers
         private List<int> _drawPile = new();
         private Dictionary<ulong, List<int>> _playerHands = new();
         private Dictionary<ulong, int> _washHandUses = new();
+        private static ISession CurrentSession => World.Get.ActiveSession;
 
-        public override void OnNetworkSpawn()
+        private void Awake()
         {
-            if (!IsSessionOwner) return;
             Instance = this;
         }
 
         public void InitializePlayerData(ulong clientId)
         {
-            if (!IsSessionOwner) return;
+            if (!CurrentSession.IsHost) return;
             _washHandUses[clientId] = 2; // GDD: 2 uses per game session
         }
 

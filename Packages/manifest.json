@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.adamgryu.inspectorhistory": "https://github.com/adamgryu/InspectorHistory-Unity.git",
     "com.dbrizov.naughtyattributes": "https://github.com/dbrizov/NaughtyAttributes.git#upm",
     "com.unity.ide.rider": "3.0.36",
     "com.unity.multiplayer.center": "1.0.0",

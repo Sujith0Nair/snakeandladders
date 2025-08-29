@@ -20,5 +20,6 @@ MonoBehaviour:
   moveTileCount: 0
   actionCardType: 4
   retreatMoveTileCount: 0
-  counteredBy: 2
+  counteredBy: 1
+  effectDuration: 0
   defensiveCardType: 0
